@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blocks · Trains Project 3</title>
+<meta name="description" content="Reference for every Trains Project locomotive and wagon: parameters, ranges, defaults and exact behaviour.">
+<link rel="icon" href="assets/art/appicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b> Project</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav">
+      <a href="index.html">Home</a>
+      <a href="guide.html">Guide</a>
+      <a href="editor.html">Code editor</a>
+      <a href="stage.html">Stage &amp; characters</a>
+      <a href="blocks.html" aria-current="page">Blocks</a>
+      <a href="engine.html">How a run works</a>
+      <a href="samples.html">Samples</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="toc" data-auto></aside>
+  <main class="doc">
+    <p class="eyebrow">Reference</p>
+    <h1>Blocks</h1>
+    <p class="intro">Trains Project v1 has 9 locomotives and 32 wagons. Each entry lists the block’s parameters with their range and <u>default</u>, and describes exactly what the engine does.</p>
+
+    <div class="note">
+      <p><strong>How to read this page.</strong></p>
+      <ul>
+        <li><span class="tag dur">takes time</span> wagons keep their train waiting until they finish: gliding, turning, waiting, a speech bubble.</li>
+        <li><span class="tag inst">instant</span> wagons finish immediately, and the next wagon runs in the same frame.</li>
+        <li><span class="tag box">container</span> wagons hold other wagons.</li>
+        <li>Every number parameter can also take a <a href="editor.html#values">random number, a variable, a property or the timer</a> instead of a fixed number. The <code>id</code> next to each name is the identifier used in saved projects.</li>
+      </ul>
+    </div>
+
+    <!-- ================= LOCOMOTIVES ================= -->
+    <h2 class="cat-title c-events" id="locomotives-events"><span class="swatch"></span>Locomotives (events)</h2>
+    <p>A train starts with exactly one locomotive. Locomotives are red and live in the first tab of the depot. A train with no wagons never starts.</p>
+
+    <div class="block c-events"><span class="chip lg"><img src="assets/art/glyph-on-start.png" alt=""></span><div>
+      <h4>When ▶ is pressed <code>start</code></h4>
+      <p>Runs once for every placement of the character when the program starts. Clones do not run it; they have <em>When I start as a clone</em> instead.</p>
+    </div></div>
+
+    <div class="block c-events"><span class="chip lg"><img src="assets/art/glyph-on-tap.png" alt=""></span><div>
+      <h4>When tapped <code>tap</code></h4>
+      <p>Runs when the player taps or clicks this character during the run. Only the top-most character under the finger is tapped.</p>
+    </div></div>
+
+    <div class="block c-events"><span class="chip lg"><img src="assets/art/glyph-on-input.png" alt=""></span><div>
+      <h4>When a button is pressed <code>input</code></h4>
+      <ul class="params"><li><b>key</b>: ← → ↑ ↓ A B · default <u>→</u></li></ul>
+      <p>Runs for <em>every</em> character that has this train when the gamepad button (or its Mac key) goes down. It fires once per press; holding the button does not repeat. Use <em>Wait until button held</em> or an <em>If</em> to react to a held button. Using this locomotive makes the on-screen gamepad appear.</p>
+    </div></div>
+
+    <div class="block c-events"><span class="chip lg"><img src="assets/art/glyph-on-tilt.png" alt=""></span><div>
+      <h4>When tilted <code>tilt</code></h4>
+      <ul class="params"><li><b>side</b>: left, right · default <u>left</u></li></ul>
+      <p>Runs when the iPad is tilted more than 20° to that side. On Mac, <kbd>Q</kbd> tilts left and <kbd>E</kbd> tilts right. Like buttons, it is broadcast to every character.</p>
+    </div></div>
+
+    <div class="block c-events"><span class="chip lg"><img src="assets/art/glyph-on-bump.png" alt=""></span><div>
+      <h4>When bumping <code>bump</code></h4>
+      <ul class="params"><li><b>target</b>: a character, any character, any wall, left / right / top / bottom wall · default <u>any wall</u></li></ul>
+      <p>Runs when this character <em>starts</em> touching the target. It fires once per contact; staying in contact does not repeat it, but separating and touching again does. Ghost characters bump too. Wall bumps need the walls switched on.</p>
+    </div></div>
+
+    <div class="block c-events"><span class="chip lg"><img src="assets/art/glyph-on-message.png" alt=""></span><div>
+      <h4>When a message arrives <code>message</code></h4>
+      <ul class="params"><li><b>colour</b>: red, blue, yellow, green · default <u>red</u></li></ul>
+      <p>Runs when any character <em>sends</em> a message of this colour, including the sender itself. Unlike other events, a message <strong>restarts</strong> the train from the beginning if it is already running.</p>
+    </div></div>
+
+    <div class="block c-events"><span class="chip lg"><img src="assets/art/glyph-on-every.png" alt=""></span><div>
+      <h4>Every few seconds <code>every</code></h4>
+      <ul class="params"><li><b>seconds</b>: 0.1–60, step 0.1 · default <u>1</u></li></ul>
+      <p>Runs repeatedly while the program runs. The first run comes one interval after the start, not at the start. If the train is still busy when the timer comes round, that tick is skipped. With a random or variable interval, the next interval is read again each time.</p>
+    </div></div>
+
+    <div class="block c-events"><span class="chip lg"><img src="assets/art/glyph-on-cloneStart.png" alt=""></span><div>
+      <h4>When I start as a clone <code>cloneStart</code></h4>
+      <p>Runs in a newly made clone, right after a <em>Clone</em> wagon made it.</p>
+    </div></div>
+
+    <div class="block c-events"><span class="chip lg"><img src="assets/art/glyph-on-heartsEmpty.png" alt=""></span><div>
+      <h4>When hearts run out <code>heartsEmpty</code></h4>
+      <p>Runs when a <em>Hearts</em> wagon brings this character’s hearts down to 0.</p>
+    </div></div>
+
+    <!-- ================= MOTION ================= -->
+    <h2 class="cat-title c-motion" id="motion"><span class="swatch"></span>Motion</h2>
+    <p>Directions are <em>forward</em> and <em>backward</em> (relative to where the character faces) or <em>up</em>, <em>down</em>, <em>left</em> and <em>right</em> (fixed screen directions).</p>
+
+    <div class="block c-motion"><span class="chip lg"><img src="assets/art/glyph-move.png" alt=""></span><div>
+      <h4>Move <code>move</code> <span class="tag dur">takes time</span></h4>
+      <ul class="params">
+        <li><b>direction</b>: forward, backward, up, down, left, right · default <u>forward</u></li>
+        <li><b>tiles</b>: 0–16 · default <u>1</u></li>
+        <li><b>speed</b>: slow (2 tiles/s), normal (4 tiles/s), fast (8 tiles/s) · default <u>normal</u></li>
+      </ul>
+      <p>Glides the character smoothly by that many tiles. Moving 4 tiles at normal speed takes 1 second. Gliding sets the position frame by frame and clears any speed the character had, so it works with every body type, and gravity cannot pull the character off course mid-glide. A variable can make the distance negative, which glides the opposite way.</p>
+    </div></div>
+
+    <div class="block c-motion"><span class="chip lg"><img src="assets/art/glyph-kick.png" alt=""></span><div>
+      <h4>Kick <code>kick</code> <span class="tag inst">instant</span></h4>
+      <ul class="params">
+        <li><b>direction</b>: as for Move · default <u>forward</u></li>
+        <li><b>strength</b>: 1–10 · default <u>5</u></li>
+      </ul>
+      <p>Gives the character a physics push. Each point of strength adds 50 px/s (about 3 tiles/s) of speed to a normal-weight character. Strength 5 with gravity on is a jump of about 5 tiles. Light characters go twice as fast; heavy ones go 2.5 × slower. Kicks add up with the current speed. A <em>fixed</em> body cannot be kicked.</p>
+    </div></div>
+
+    <div class="block c-motion"><span class="chip lg"><img src="assets/art/glyph-turn.png" alt=""></span><div>
+      <h4>Turn <code>turn</code> <span class="tag dur">takes time</span></h4>
+      <ul class="params">
+        <li><b>side</b>: left (counter-clockwise), right (clockwise) · default <u>left</u></li>
+        <li><b>degrees</b>: 0–360, step 15 · default <u>90</u></li>
+      </ul>
+      <p>Rotates smoothly at 360° per second, so a quarter turn takes 0.25 s. Turning also changes where <em>forward</em> points.</p>
+    </div></div>
+
+    <div class="block c-motion"><span class="chip lg"><img src="assets/art/glyph-point.png" alt=""></span><div>
+      <h4>Point <code>point</code> <span class="tag inst">instant</span></h4>
+      <ul class="params">
+        <li><b>mode</b>: angle, toward · default <u>angle</u></li>
+        <li><b>angle</b> (angle mode): 0–359, step 15 · default <u>0</u> (right)</li>
+        <li><b>target</b> (toward mode): a character or any character · default <u>any</u></li>
+      </ul>
+      <p>Faces an absolute direction, or turns to face the <strong>nearest</strong> matching character. If two are equally near, the one created first wins. Nothing happens if no such character exists.</p>
+    </div></div>
+
+    <div class="block c-motion"><span class="chip lg"><img src="assets/art/glyph-goTo.png" alt=""></span><div>
+      <h4>Go to <code>goTo</code> <span class="tag inst">instant</span></h4>
+      <ul class="params">
+        <li><b>mode</b>: tile, random, character · default <u>tile</u></li>
+        <li><b>x</b>, <b>y</b> (tile mode): 0–15 · default <u>8, 8</u></li>
+        <li><b>target</b> (character mode): a character or any · default <u>any</u></li>
+      </ul>
+      <p>Jumps instantly. <em>Tile</em> goes to (x, y), clamped to the stage. <em>Random</em> picks a random whole tile. <em>Character</em> jumps onto the nearest matching character. Jumping clears any speed the character had.</p>
+    </div></div>
+
+    <!-- ================= LOOKS ================= -->
+    <h2 class="cat-title c-looks" id="looks"><span class="swatch"></span>Looks</h2>
+
+    <div class="block c-looks"><span class="chip lg"><img src="assets/art/glyph-say.png" alt=""></span><div>
+      <h4>Say <code>say</code> <span class="tag dur">takes time</span></h4>
+      <ul class="params">
+        <li><b>text</b>: up to 40 characters · default <u>“Hello!”</u></li>
+        <li><b>seconds</b>: 0.5–10, step 0.5 · default <u>2</u></li>
+      </ul>
+      <p>Shows a speech bubble and waits until it disappears. If the train is stopped or restarted meanwhile, the bubble goes away with it.</p>
+    </div></div>
+
+    <div class="block c-looks"><span class="chip lg"><img src="assets/art/glyph-costume.png" alt=""></span><div>
+      <h4>Costume <code>costume</code> <span class="tag inst">instant</span></h4>
+      <ul class="params">
+        <li><b>mode</b>: pick, next · default <u>pick</u></li>
+        <li><b>costume</b> (pick mode): any costume · default <u>owl</u></li>
+      </ul>
+      <p>Changes the picture and keeps the colour variant. <em>Next</em> steps through all costumes in catalogue order and wraps around.</p>
+    </div></div>
+
+    <div class="block c-looks"><span class="chip lg"><img src="assets/art/glyph-colour.png" alt=""></span><div>
+      <h4>Colour <code>colour</code> <span class="tag inst">instant</span></h4>
+      <ul class="params">
+        <li><b>mode</b>: pick, next, random · default <u>next</u></li>
+        <li><b>variant</b> (pick mode): 0–7 · default <u>1</u> (0 is the original colours)</li>
+      </ul>
+      <p>Switches to another of the costume’s 8 colour variants. <em>Next</em> cycles through 0 → 7 and back to 0.</p>
+    </div></div>
+
+    <div class="block c-looks"><span class="chip lg"><img src="assets/art/glyph-size.png" alt=""></span><div>
+      <h4>Size <code>size</code> <span class="tag dur">takes time</span></h4>
+      <ul class="params"><li><b>percent</b>: 25–300, step 25 · default <u>150</u></li></ul>
+      <p>Grows or shrinks to that size over 0.25 s. 100 % is 2 × 2 tiles. The collision shape grows with it.</p>
+    </div></div>
+
+    <div class="block c-looks"><span class="chip lg"><img src="assets/art/glyph-fade.png" alt=""></span><div>
+      <h4>Fade <code>fade</code> <span class="tag dur">takes time</span></h4>
+      <ul class="params"><li><b>percent</b>: 0–100, step 10 · default <u>50</u></li></ul>
+      <p>Animates the opacity to that value over 0.25 s. 0 is invisible and 100 is fully visible. An invisible character still collides and can still be tapped.</p>
+    </div></div>
+
+    <div class="block c-looks"><span class="chip lg"><img src="assets/art/glyph-penDown.png" alt=""></span><div>
+      <h4>Pen down <code>penDown</code> <span class="tag inst">instant</span></h4>
+      <ul class="params"><li><b>colour</b>: one of the 32 palette colours · default <u>white (7)</u></li></ul>
+      <p>From now on, the character draws a pixel line wherever it goes, behind all characters. Using it again with another colour changes the colour without lifting the pen.</p>
+    </div></div>
+
+    <div class="block c-looks"><span class="chip lg"><img src="assets/art/glyph-penUp.png" alt=""></span><div>
+      <h4>Pen up <code>penUp</code> <span class="tag inst">instant</span></h4>
+      <p>Stops drawing. The lines already drawn stay.</p>
+    </div></div>
+
+    <div class="block c-looks"><span class="chip lg"><img src="assets/art/glyph-penClear.png" alt=""></span><div>
+      <h4>Clear pen <code>penClear</code> <span class="tag inst">instant</span></h4>
+      <p>Erases every drawing on the stage, from every character. Stopping the program also clears the drawing.</p>
+    </div></div>
+
+    <!-- ================= CONTROL ================= -->
+    <h2 class="cat-title c-control" id="control"><span class="swatch"></span>Control</h2>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-wait.png" alt=""></span><div>
+      <h4>Wait <code>wait</code> <span class="tag dur">takes time</span></h4>
+      <ul class="params"><li><b>seconds</b>: 0–30, step 0.5 · default <u>1</u></li></ul>
+      <p>Pauses this train. Other trains keep running. Times are rounded to 1/60 s. A wait of 0 does nothing.</p>
+    </div></div>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-repeat.png" alt=""></span><div>
+      <h4>Repeat <code>repeat</code> <span class="tag box">container</span></h4>
+      <ul class="params"><li><b>times</b>: 0–99 · default <u>3</u></li></ul>
+      <p>Runs the wagons inside that many times, then continues. The count is read once, when the repeat starts, and rounded to a whole number. 0 skips the body.</p>
+    </div></div>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-forever.png" alt=""></span><div>
+      <h4>Forever <code>forever</code> <span class="tag box">container</span></h4>
+      <p>Runs the wagons inside over and over until the program stops. Wagons placed after a forever never run. A forever with only instant wagons inside runs one pass per frame (60 per second), so it cannot freeze the app.</p>
+    </div></div>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-if.png" alt=""></span><div>
+      <h4>If <code>if</code> <span class="tag box">container</span></h4>
+      <ul class="params">
+        <li><b>condition</b>: see <a href="editor.html#conditions">conditions</a> · default <u>1 = 1</u> (always true)</li>
+        <li><b>else</b>: on or off · default <u>off</u></li>
+      </ul>
+      <p>Checks the condition once. If it holds, runs the <em>then</em> branch; otherwise runs the <em>else</em> branch, if there is one. Then the train continues after the if.</p>
+    </div></div>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-waitUntil.png" alt=""></span><div>
+      <h4>Wait until <code>waitUntil</code> <span class="tag dur">takes time</span></h4>
+      <ul class="params"><li><b>condition</b> · default <u>1 = 1</u></li></ul>
+      <p>If the condition already holds, the train goes straight on. Otherwise the train waits, checking again every frame (60 times per second).</p>
+    </div></div>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-send.png" alt=""></span><div>
+      <h4>Send <code>send</code> <span class="tag inst">instant</span></h4>
+      <ul class="params"><li><b>colour</b>: red, blue, yellow, green · default <u>red</u></li></ul>
+      <p>Broadcasts a message to every character, including this one. Every matching <em>When a message arrives</em> train starts, or starts over, on the next frame. The stage shows coloured rings around the sender.</p>
+    </div></div>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-clone.png" alt=""></span><div>
+      <h4>Clone <code>clone</code> <span class="tag inst">instant</span></h4>
+      <p>Makes a copy of this character exactly as it is now: position, angle, size, opacity, costume, colour, body, weight and hearts. The clone then runs its <em>When I start as a clone</em> trains. Clones vanish when the program stops. At most 128 characters (placements plus clones) can exist at once; further clones are silently skipped.</p>
+    </div></div>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-remove.png" alt=""></span><div>
+      <h4>Remove <code>remove</code> <span class="tag inst">instant</span></h4>
+      <p>Takes this character off the stage with a puff and stops all its trains immediately. A removed placement comes back when the program stops; a removed clone is gone.</p>
+    </div></div>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-win.png" alt=""></span><div>
+      <h4>Win <code>win</code> <span class="tag inst">instant</span></h4>
+      <p>Ends the run as a win. Every train stops, the world freezes, and confetti bursts. Then the “You win!” card offers <em>Play again</em> or <em>Edit</em>, and the WIN jingle plays.</p>
+    </div></div>
+
+    <div class="block c-control"><span class="chip lg"><img src="assets/art/glyph-lose.png" alt=""></span><div>
+      <h4>Lose <code>lose</code> <span class="tag inst">instant</span></h4>
+      <p>Ends the run as a loss: a red flash with falling grey pixels, the “Game over” card, and the FAIL jingle.</p>
+    </div></div>
+
+    <!-- ================= PHYSICS ================= -->
+    <h2 class="cat-title c-physics" id="physics"><span class="swatch"></span>Physics</h2>
+    <p>The physics wagons change the character (or the world) for the rest of the run. Nothing they do is saved; stopping restores the design. Exact numbers are on <a href="engine.html#physics">How a run works</a>.</p>
+
+    <div class="block c-physics"><span class="chip lg"><img src="assets/art/glyph-gravity.png" alt=""></span><div>
+      <h4>Gravity <code>gravity</code> <span class="tag inst">instant</span></h4>
+      <ul class="params"><li><b>state</b>: on, off · default <u>on</u></li></ul>
+      <p>Switches gravity for the whole world. With gravity on, physics characters fall; a fall across the whole stage takes about a second. Fixed and ghost characters never fall.</p>
+    </div></div>
+
+    <div class="block c-physics"><span class="chip lg"><img src="assets/art/glyph-body.png" alt=""></span><div>
+      <h4>Body <code>body</code> <span class="tag inst">instant</span></h4>
+      <ul class="params"><li><b>type</b>: physics, fixed, ghost · default <u>physics</u></li></ul>
+      <p><strong>Physics</strong>: a round body that falls, bounces and pushes others. <strong>Fixed</strong>: a square, solid obstacle that nothing can push. <strong>Ghost</strong>: round, no gravity, passes through other characters but stays inside the walls and still detects touches. Joints made with <em>Stick</em> are kept across the change.</p>
+    </div></div>
+
+    <div class="block c-physics"><span class="chip lg"><img src="assets/art/glyph-mass.png" alt=""></span><div>
+      <h4>Mass <code>mass</code> <span class="tag inst">instant</span></h4>
+      <ul class="params"><li><b>level</b>: light, normal, heavy · default <u>heavy</u></li></ul>
+      <p>Sets the weight: light is half of normal, and heavy is 2.5 × normal. Weight changes how far kicks send the character and who pushes whom in a collision.</p>
+    </div></div>
+
+    <div class="block c-physics"><span class="chip lg"><img src="assets/art/glyph-magnet.png" alt=""></span><div>
+      <h4>Magnet <code>magnet</code> <span class="tag inst">instant</span></h4>
+      <ul class="params"><li><b>mode</b>: attract, repel, off · default <u>attract</u></li></ul>
+      <p>Turns the character into a magnet that pulls (or pushes) every other moving character within 8 tiles. The pull gets weaker with distance. The magnet itself is not affected by its own field.</p>
+    </div></div>
+
+    <div class="block c-physics"><span class="chip lg"><img src="assets/art/glyph-stick.png" alt=""></span><div>
+      <h4>Stick <code>stick</code> <span class="tag inst">instant</span></h4>
+      <ul class="params"><li><b>mode</b>: weld, hinge, unstick · default <u>weld</u></li></ul>
+      <p>Joins this character to every character it is touching <em>right now</em>. <strong>Weld</strong> makes them move as one rigid piece. <strong>Hinge</strong> joins them at one point, so they can swing and spin. <strong>Unstick</strong> removes all of this character’s joints. At least one of the two must be able to move.</p>
+    </div></div>
+
+    <div class="block c-physics"><span class="chip lg"><img src="assets/art/glyph-drag.png" alt=""></span><div>
+      <h4>Drag <code>drag</code> <span class="tag inst">instant</span></h4>
+      <ul class="params"><li><b>mode</b>: off, x, y, both · default <u>both</u></li></ul>
+      <p>Lets the player drag this character with a finger or the mouse during the run: only sideways (x), only up and down (y), or freely. Physics characters are pulled toward the finger, push others on the way and can be flung on release. Fixed characters follow the finger exactly.</p>
+    </div></div>
+
+    <!-- ================= DATA ================= -->
+    <h2 class="cat-title c-data" id="data"><span class="swatch"></span>Data</h2>
+    <p>There are four global number boxes, the variables <strong>A, B, C and D</strong>. All characters share them. They start at 0 on every run.</p>
+
+    <div class="block c-data"><span class="chip lg"><img src="assets/art/glyph-set.png" alt=""></span><div>
+      <h4>Set <code>set</code> <span class="tag inst">instant</span></h4>
+      <ul class="params">
+        <li><b>variable</b>: A–D · default <u>A</u></li>
+        <li><b>value</b>: −999 to 999 · default <u>0</u></li>
+      </ul>
+      <p>Puts a value into the variable.</p>
+    </div></div>
+
+    <div class="block c-data"><span class="chip lg"><img src="assets/art/glyph-change.png" alt=""></span><div>
+      <h4>Change <code>change</code> <span class="tag inst">instant</span></h4>
+      <ul class="params">
+        <li><b>variable</b>: A–D · default <u>A</u></li>
+        <li><b>op</b>: + − × ÷ · default <u>+</u></li>
+        <li><b>value</b>: −999 to 999 · default <u>1</u></li>
+      </ul>
+      <p>Adds, subtracts, multiplies or divides the variable by the value. Dividing by zero leaves the variable unchanged. The result can be any number; the −999…999 limit applies only to numbers typed on the plate.</p>
+    </div></div>
+
+    <div class="block c-data"><span class="chip lg"><img src="assets/art/glyph-hearts.png" alt=""></span><div>
+      <h4>Hearts <code>hearts</code> <span class="tag inst">instant</span></h4>
+      <ul class="params"><li><b>amount</b>: −10 to 10 · default <u>−1</u></li></ul>
+      <p>Adds or removes hearts. The result is kept between 0 and 10, and the stage shows a burst of hearts with the new count. Reaching 0 fires <em>When hearts run out</em>. The <em>hearts</em> property reads the current count.</p>
+    </div></div>
+
+    <div class="block c-data"><span class="chip lg"><img src="assets/art/glyph-showVariable.png" alt=""></span><div>
+      <h4>Show variable <code>showVariable</code> <span class="tag inst">instant</span></h4>
+      <ul class="params">
+        <li><b>variable</b>: A–D · default <u>A</u></li>
+        <li><b>state</b>: on, off · default <u>on</u></li>
+      </ul>
+      <p>Shows or hides a small tile on the stage with the variable’s name and live value, which is handy for scores and counters.</p>
+    </div></div>
+
+    <h2 id="coming-from-the-old-app">Coming from the old app</h2>
+    <p>The original Trains Project had 84 separate carts. Version 3 merges them into fewer wagons with parameters:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Old carts</th><th>Now</th></tr></thead>
+      <tbody>
+        <tr><td>4 Go + 4 Shot + GoXY</td><td><em>Move</em>, <em>Kick</em>, <em>Go to</em></td></tr>
+        <tr><td>3 rotation carts</td><td><em>Turn</em>, <em>Point</em></td></tr>
+        <tr><td>32 ON/OFF carts</td><td><em>Body</em>, <em>Mass</em>, <em>Magnet</em>, <em>Stick</em>, <em>Drag</em>, <em>Gravity</em></td></tr>
+        <tr><td>3 + 3 signal carts</td><td><em>Send</em> and the <em>message</em> locomotive</td></tr>
+        <tr><td>9 input locomotives</td><td>The <em>input</em> and <em>tilt</em> locomotives</td></tr>
+        <tr><td>Clone tab</td><td>The <em>When I start as a clone</em> locomotive</td></tr>
+      </tbody>
+    </table></div>
+
+    <nav class="pager"><a href="stage.html"><span>Previous</span>Stage &amp; characters</a><a class="next" href="engine.html"><span>Next</span>How a run works</a></nav>
+  </main>
+</div>
+
+<footer class="site">
+  <div class="inner">
+    <img class="px" src="assets/art/mascot-blinking.png" alt="">
+    <span>Trains Project 3 · documentation for v1</span>
+    <span class="spacer"></span>
+    <nav class="legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></nav>
+    <a href="#">Back to top</a>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

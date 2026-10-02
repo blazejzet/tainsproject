@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Developers · Trains Project 3</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Trains Project 3 for developers: architecture of the TrainsKit package, building and testing, the save format, the AI builder seam, art and music pipelines.">
+<link rel="icon" href="assets/art/appicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b> Project</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav">
+      <a href="index.html">Home</a>
+      <a href="guide.html">Guide</a>
+      <a href="editor.html">Code editor</a>
+      <a href="stage.html">Stage &amp; characters</a>
+      <a href="blocks.html">Blocks</a>
+      <a href="engine.html">How a run works</a>
+      <a href="samples.html">Samples</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="toc" data-auto></aside>
+  <main class="doc">
+    <p class="eyebrow">Developers</p>
+    <h1>Under the hood</h1>
+    <p class="intro">Trains Project 3 is a from-scratch rebuild in Swift 6: one multiplatform SwiftUI + SpriteKit app for iPadOS 26 and macOS 26, with almost all code in a local Swift package called <code>TrainsKit</code>. The authoritative design lives in <a href="../3.0/DESIGN.md"><code>3.0/DESIGN.md</code></a>.</p>
+
+    <h2 id="repository-layout">Repository layout</h2>
+<pre><code>3.0/
+  TrainsProject.xcodeproj    app target "TrainsProject" (iOS + macOS) and UI tests
+  App/                       @main, app icon, InfoPlist strings
+  UITests/                   scripted UI tests (driven by Tools/ui_steps.sh)
+  Packages/TrainsKit/        the local Swift package with all the code
+  Art/                       Codex prompts, raw generations, contact sheet, music (AAC)
+  Tools/                     pixelize, art processing, gallery renderer, UI test runner
+  DESIGN.md                  product and language design
+  LEGACY_LANGUAGE.md         the old app's 84-cart language, kept for reference
+new-vibe/                    the original soundtrack (Opus in .m4a)
+website/                     this documentation</code></pre>
+    <p>The bundle identifier is <code>pl.zyglarski.trainsproject2</code> and the iCloud container is <code>iCloud.pl.zyglarski.trainsproject2</code>. Both are shared with the 2.0 port; iCloud is not used in v1.</p>
+
+    <h2 id="architecture">Architecture</h2>
+    <p><code>TrainsKit</code> is split into six modules with a strict dependency direction. The model and the engine know nothing about SpriteKit or SwiftUI.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 640 300" role="img" aria-label="Module dependencies: TrainsUI depends on TrainsStage, TrainsEngine, TrainsArt, TrainsAudio and TrainsModel; TrainsStage depends on TrainsEngine, TrainsArt, TrainsAudio and TrainsModel; TrainsEngine, TrainsArt and TrainsAudio depend on TrainsModel">
+        <defs><marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7f8c9b"/></marker></defs>
+        <g font-family="Inter, sans-serif" font-size="13" fill="#fff1e8">
+          <g stroke="#7f8c9b" stroke-width="2" fill="none" marker-end="url(#a3)">
+            <path d="M320 58 V92"/>
+            <path d="M320 140 L150 182"/><path d="M320 140 L320 182"/><path d="M320 140 L490 182"/>
+            <path d="M150 226 L300 256"/><path d="M320 226 V252"/><path d="M490 226 L340 256"/>
+          </g>
+          <rect x="230" y="12" width="180" height="46" fill="#e8b04a" stroke="#0a0f15" stroke-width="3"/>
+          <text x="320" y="33" text-anchor="middle" fill="#0a0f15" font-weight="700">TrainsUI</text>
+          <text x="320" y="50" text-anchor="middle" fill="#0a0f15" font-size="11">SwiftUI shell, editor, workspace</text>
+          <rect x="230" y="94" width="180" height="46" fill="#1f2e3c" stroke="#29adff" stroke-width="3"/>
+          <text x="320" y="115" text-anchor="middle" font-weight="700">TrainsStage</text>
+          <text x="320" y="132" text-anchor="middle" fill="#b3bfcc" font-size="11">SpriteKit world, physics, input</text>
+          <rect x="74" y="182" width="152" height="46" fill="#1f2e3c" stroke="#ffa300" stroke-width="3"/>
+          <text x="150" y="203" text-anchor="middle" font-weight="700">TrainsEngine</text>
+          <text x="150" y="220" text-anchor="middle" fill="#b3bfcc" font-size="11">headless interpreter</text>
+          <rect x="244" y="182" width="152" height="46" fill="#1f2e3c" stroke="#83769c" stroke-width="3"/>
+          <text x="320" y="203" text-anchor="middle" font-weight="700">TrainsArt</text>
+          <text x="320" y="220" text-anchor="middle" fill="#b3bfcc" font-size="11">palette, sprites, glyphs</text>
+          <rect x="414" y="182" width="152" height="46" fill="#1f2e3c" stroke="#00e436" stroke-width="3"/>
+          <text x="490" y="203" text-anchor="middle" font-weight="700">TrainsAudio</text>
+          <text x="490" y="220" text-anchor="middle" fill="#b3bfcc" font-size="11">chiptune synth, music</text>
+          <rect x="230" y="254" width="180" height="40" fill="#1f2e3c" stroke="#ff004d" stroke-width="3"/>
+          <text x="320" y="279" text-anchor="middle" font-weight="700">TrainsModel</text>
+        </g>
+      </svg>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Module</th><th>Responsibility</th><th>Key files</th></tr></thead>
+      <tbody>
+        <tr><td class="k">TrainsModel</td><td>The <code>Codable</code> program model, the block catalogue as data, values and conditions, validation, the editing API used for undo, and the AI generation seam.</td><td><code>Program.swift</code>, <code>Catalog.swift</code>, <code>Values.swift</code>, <code>Editing.swift</code>, <code>Validation.swift</code>, <code>Generation.swift</code></td></tr>
+        <tr><td class="k">TrainsEngine</td><td>The interpreter: runners, threads, the fixed 60 Hz scheduler, events. Talks to the world only through the <code>WorldAdapter</code> protocol, so it runs headless in tests.</td><td><code>Engine.swift</code>, <code>Engine+Scheduler.swift</code>, <code>Engine+Blocks.swift</code>, <code>Engine+Actions.swift</code>, <code>Engine+Events.swift</code>, <code>TrainThread.swift</code></td></tr>
+        <tr><td class="k">TrainsStage</td><td>The SpriteKit <code>StageScene</code> that implements the world: sprites, physics bodies and joints, contacts, the pen, bubbles, the variable HUD, effects, design-mode editing, touch/mouse/keyboard/tilt input.</td><td><code>StageScene+World.swift</code>, <code>World/StagePhysics.swift</code>, <code>World/ContactTracker.swift</code>, <code>Design/</code>, <code>Input/</code></td></tr>
+        <tr><td class="k">TrainsArt</td><td>The 32-colour palette, costume and background catalogues, palette-swap colour variants, the code-drawn locomotive, wagons, mascot and glyphs, and the pixel font.</td><td><code>Art.swift</code>, <code>Glyphs.swift</code>, <code>Shells*.swift</code>, <code>PixelFont.swift</code></td></tr>
+        <tr><td class="k">TrainsAudio</td><td><code>AudioDirector</code>: synthesised effects (square, triangle, noise) and the music decks that crossfade playlists per screen, on a dedicated audio queue.</td><td><code>Audio.swift</code>, <code>ChipSynth.swift</code>, <code>SoundRecipes.swift</code>, <code>MusicPlaylist.swift</code></td></tr>
+        <tr><td class="k">TrainsUI</td><td>SwiftUI: the home screen, the workspace (swap / side by side), the dock, inspector, settings, gamepad, the code editor (canvas, layout, drag &amp; drop, depot, popovers) and the project store.</td><td><code>Shell/</code>, <code>Editor/</code>, <code>Shared/WorkspaceModel.swift</code>, <code>Shared/ProjectStore.swift</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 id="data-flow">Data flow</h3>
+    <ul>
+      <li><strong>Editing.</strong> Every edit goes through <code>WorkspaceModel.edit { project in … }</code>. It copies the project, applies the change through the <code>TrainsModel</code> editing API (<code>insert</code>, <code>uncouple</code>, <code>setArg</code>, <code>moveTrain</code>…), pushes the old value on the undo stack (max 100), refreshes the stage’s design view and schedules an autosave one second later. Edits are ignored while running.</li>
+      <li><strong>Running.</strong> <code>WorkspaceModel.run()</code> saves, then <code>StageScene.run(project)</code> switches the scene to live mode and calls <code>Engine.start(project)</code>. Each frame the scene calls <code>engine.advance(by: dt)</code>. The engine drives the world through <code>WorldAdapter</code>, and the scene feeds taps, input and contacts back with <code>engine.handle(_:)</code>.</li>
+      <li><strong>Highlighting.</strong> The engine is <code>@Observable</code>. After each step it republishes <code>activeBlocks</code> and <code>activeTrains</code> per runner, assigning them only when they change. The editor unions them over the selected character’s runners.</li>
+    </ul>
+
+    <h2 id="build-and-test">Build and test</h2>
+    <p><code>xcode-select</code> may point at the Command Line Tools, so set <code>DEVELOPER_DIR</code> first.</p>
+<pre><code>export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+
+# Unit tests for the model, engine and audio (macOS, fast)
+cd 3.0/Packages/TrainsKit &amp;&amp; swift test
+
+# The app
+xcodebuild -scheme TrainsProject -destination 'platform=macOS' build
+xcodebuild -scheme TrainsProject -destination 'generic/platform=iOS Simulator' build
+
+# A scripted UI run with screenshots. Taps and drags use window fractions (0…1).
+Tools/ui_steps.sh /tmp/shots "wait:4;tap:0.255,0.40;wait:3;shot:workspace"</code></pre>
+    <ul>
+      <li>The unit tests cover the model, editing and validation, the engine (blocks, events, values, scheduling) against a <code>MockWorld</code>, and the audio playlists.</li>
+      <li>The UI test runner understands <code>tap:x,y</code>, <code>hold:x,y,sec</code>, <code>drag:x1,y1,x2,y2</code>, <code>swipeleft</code>, <code>wait:sec</code>, <code>shot:name</code> and <code>dump</code>. XCUITest’s idle waiting is disabled because the game animates constantly. The app is terminated at the end so its music stops.</li>
+      <li>DEBUG builds accept <code>-UITestOpenProject "&lt;name&gt;"</code> to open a project on launch.</li>
+    </ul>
+
+    <h2 id="save-format">Save format</h2>
+    <p>Each project is one pretty-printed JSON file at <code>Application Support/Projects/&lt;uuid&gt;.json</code>, with ISO 8601 dates and sorted keys. There is no document browser. The schema is versioned with <code>schemaVersion</code> (currently 1).</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Type</th><th>Fields</th></tr></thead>
+      <tbody>
+        <tr><td class="k"><code>Project</code></td><td><code>schemaVersion</code>, <code>id</code>, <code>name</code>, <code>created</code>, <code>modified</code>, <code>settings</code>, <code>actors</code></td></tr>
+        <tr><td class="k"><code>StageSettings</code></td><td><code>background</code> (meadow, space, desert, castle, grid, dusk), <code>walls</code>, <code>gravity</code></td></tr>
+        <tr><td class="k"><code>Actor</code></td><td><code>id</code>, <code>name</code>, <code>costume</code>, <code>variant</code> (0–7), <code>hearts</code>, <code>mass</code>, <code>body</code>, <code>placements</code>, <code>trains</code></td></tr>
+        <tr><td class="k"><code>Placement</code></td><td><code>id</code>, <code>x</code>, <code>y</code> (tiles), <code>angle</code> (degrees), <code>size</code> (percent)</td></tr>
+        <tr><td class="k"><code>Train</code></td><td><code>id</code>, <code>trigger</code> {<code>kind</code>, <code>args</code>}, <code>blocks</code>, <code>canvasX</code>, <code>canvasY</code></td></tr>
+        <tr><td class="k"><code>Block</code></td><td><code>id</code>, <code>kind</code>, <code>args</code>, <code>body</code>, optional <code>elseBody</code> (only on <code>if</code>)</td></tr>
+        <tr><td class="k"><code>Arg</code></td><td>one of <code>value</code> (a <code>Value</code>), <code>option</code> (string), <code>text</code>, <code>condition</code>, <code>target</code></td></tr>
+        <tr><td class="k"><code>Value</code></td><td><code>number</code>, <code>random(min,max)</code>, <code>variable</code>, <code>property</code>, <code>timer</code></td></tr>
+        <tr><td class="k"><code>Condition</code></td><td><code>compare(Value, op, Value)</code>, <code>touching(Target)</code>, <code>inputHeld(key)</code>, <code>not(Condition)</code></td></tr>
+        <tr><td class="k"><code>Target</code></td><td><code>actor(id)</code>, <code>anyActor</code>, <code>anyWall</code>, <code>wall(side)</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>Block kinds and parameter names are stable string identifiers (the <code>id</code>s on the <a href="blocks.html">Blocks</a> page). Enums with associated values use Swift’s synthesised <code>Codable</code> form (<code>"_0"</code> keys). An excerpt from a real file, a Say wagon:</p>
+<pre><code>{
+  "args" : {
+    "seconds" : { "value" : { "_0" : { "number" : { "_0" : 2 } } } },
+    "text" : { "text" : { "_0" : "Hi!" } }
+  },
+  "body" : [ ],
+  "id" : "DA70AD65-5810-40C8-8B0D-33EB0AD75D06",
+  "kind" : "say"
+}</code></pre>
+    <p>When a character is deleted, <code>Validator.sanitized</code> repairs other trains that pointed at it, replacing invalid arguments with their catalogue defaults.</p>
+
+    <h2 id="the-block-catalogue">The block catalogue</h2>
+    <p>The language is data. <code>TriggerKind.spec</code> and <code>BlockKind.spec</code> return a <code>BlockSpec</code> with category, parameters (<code>ParamSpec</code>: name, kind, default, and an optional <code>visibleWhen</code> rule), whether the block is a container, and a one-line summary. This single table drives:</p>
+    <ul>
+      <li>the editor’s depot, plates and popovers;</li>
+      <li>the defaults of new wagons (<code>Block.make(kind)</code>);</li>
+      <li>validation of loaded and generated programs;</li>
+      <li>the AI prompt (<code>CatalogDescription.text</code>).</li>
+    </ul>
+    <p>To add a wagon: add a case to <code>BlockKind</code> with its spec, execute it in <code>Engine+Blocks.swift</code> or <code>Engine+Actions.swift</code>, add its glyph in <code>TrainsArt/Glyphs.swift</code> and its names in <code>EditorNames.swift</code> and <code>Editor.xcstrings</code> (English and Polish), then cover it with an engine test.</p>
+
+    <h2 id="ai-track-builder-prepared">AI track builder (prepared)</h2>
+    <p>v1 ships the seam for an on-device generator based on Apple’s Foundation Models, but not the generator itself:</p>
+<pre><code>public protocol ProgramGenerator: Sendable {
+    /// Trains for `context.actor` that do what `description` says. Implementations must return
+    /// trains that pass `Validator` (use `Validator.sanitized` as the last step).
+    func generate(description: String, context: GenerationContext) async throws -> [Train]
+}</code></pre>
+    <p><code>CatalogDescription.text</code> renders the whole language into a compact prompt. It begins:</p>
+<pre><code>LOCOMOTIVES (a train starts with exactly one):
+- start: When the run starts.
+- tap: When this character is tapped during the run.
+- input(key: left|right|up|down|a|b): When a gamepad button or key is pressed.
+…
+MOTION WAGONS:
+- move(direction: forward|backward|up|down|left|right, tiles: number 0...16 tiles, speed: slow|normal|fast): Glide a number of tiles in a direction.
+…
+World: 16x16 tiles, x 0-15 left to right, y 0-15 bottom to top. Angles: 0 = right, 90 = up.</code></pre>
+
+    <h2 id="art-pipeline">Art pipeline</h2>
+    <ol class="steps">
+      <li><strong>Generate.</strong> Codex image generation renders each costume and themed background from a prompt kept in <code>Art/prompts/</code>. Raw outputs go to <code>Art/raw/</code>.</li>
+      <li><strong>Pixelize.</strong> <code>Tools/process-art.sh</code> runs <code>Tools/pixelize.swift</code>, which snaps every image to a true pixel grid (32 × 32 characters, 256 × 256 backgrounds) and to the fixed palette by dominant colour, and writes it into <code>TrainsArt/Resources</code>.</li>
+      <li><strong>Review.</strong> <code>Tools/render-gallery.sh</code> renders <code>Art/contact-sheet.png</code>. With a second argument it also dumps every glyph, wagon, costume variant and background as a 1× PNG. The art on this website was exported that way.</li>
+    </ol>
+    <p>The locomotive, wagon shells, mascot, app icon, the dusk and grid backgrounds and all wagon glyphs are drawn in code on the palette. <code>Tools/render-gallery.sh --icon</code> regenerates the app icon. Colour variants are palette swaps at run time.</p>
+    <h3 id="the-palette">The palette</h3>
+    <p>Every pixel in the app uses these 32 colours (PICO-8 plus its extension). Pen colours are chosen by index.</p>
+    <div class="palette">
+      <span data-i="0" style="background:#000000"></span><span data-i="1" style="background:#1d2b53"></span><span data-i="2" style="background:#7e2553"></span><span data-i="3" style="background:#008751"></span>
+      <span data-i="4" style="background:#ab5236"></span><span data-i="5" style="background:#5f574f"></span><span data-i="6" style="background:#c2c3c7"></span><span data-i="7" style="background:#fff1e8"></span>
+      <span data-i="8" style="background:#ff004d"></span><span data-i="9" style="background:#ffa300"></span><span data-i="10" style="background:#ffec27"></span><span data-i="11" style="background:#00e436"></span>
+      <span data-i="12" style="background:#29adff"></span><span data-i="13" style="background:#83769c"></span><span data-i="14" style="background:#ff77a8"></span><span data-i="15" style="background:#ffccaa"></span>
+      <span data-i="16" style="background:#291814"></span><span data-i="17" style="background:#111d35"></span><span data-i="18" style="background:#422136"></span><span data-i="19" style="background:#125359"></span>
+      <span data-i="20" style="background:#742f29"></span><span data-i="21" style="background:#49333b"></span><span data-i="22" style="background:#a28879"></span><span data-i="23" style="background:#f3ef7d"></span>
+      <span data-i="24" style="background:#be1250"></span><span data-i="25" style="background:#ff6c24"></span><span data-i="26" style="background:#a8e72e"></span><span data-i="27" style="background:#00b543"></span>
+      <span data-i="28" style="background:#065ab5"></span><span data-i="29" style="background:#754665"></span><span data-i="30" style="background:#ff6e59"></span><span data-i="31" style="background:#ff9d81"></span>
+    </div>
+    <p>Category colours are palette entries: events 8, motion 12, looks 13, control 9, physics 11, data 10.</p>
+
+    <h2 id="music">Music</h2>
+    <p>The soundtrack in <code>new-vibe/</code> is Opus inside <code>.m4a</code>, which AVFoundation cannot decode. Each track is converted to AAC into <code>3.0/Art/music/</code> and bundled in <code>TrainsAudio/Resources</code>:</p>
+<pre><code>ffmpeg -i START.m4a -c:a aac -b:a 160k start.m4a</code></pre>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Scene</th><th>Tracks</th><th>Plays</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Home</td><td><code>start</code></td><td>Looping on the home screen</td></tr>
+        <tr><td class="k">Coding</td><td><code>coding_1</code>, <code>coding_2</code>, <code>coding_3</code></td><td>In turn, looping, while editing</td></tr>
+        <tr><td class="k">Running</td><td><code>game_1</code>, <code>game_2</code></td><td>In turn, looping, while a program runs</td></tr>
+        <tr><td class="k">Win / Lose</td><td><code>win</code> / <code>fail</code></td><td>Once at the end of a run, then straight into the coding loop</td></tr>
+      </tbody>
+    </table></div>
+    <p>Two music decks crossfade between scenes, and the music ducks under sound effects. Going back to coding after a jingle does not restart the coding loop. Music on/off and effects on/off are stored in <code>UserDefaults</code>.</p>
+
+    <h2 id="localisation">Localisation</h2>
+    <p>Strings live in String Catalogs: <code>Shell.xcstrings</code> for the app shell, <code>Editor.xcstrings</code> for wagon, parameter and option names, and <code>InfoPlist.xcstrings</code>. English is the development language and Polish is complete. Sample projects and character names are localised when they are created.</p>
+
+    <h2 id="status-of-v1">Status of v1</h2>
+    <div class="grid two">
+      <div class="card"><h3 id="done">Done</h3><ul>
+        <li>The sandbox and the full v1 block set</li>
+        <li>Physics, both layouts, local projects</li>
+        <li>Four samples, pixel art, chiptune effects, music</li>
+        <li>English and Polish</li>
+      </ul></div>
+      <div class="card"><h3 id="not-in-v1">Not in v1</h3><ul>
+        <li>Challenge levels</li>
+        <li>iCloud sync and sharing</li>
+        <li>The AI track builder implementation (its protocol, catalogue description and validation do ship)</li>
+        <li>Artwork for six catalogued costumes (cow, sheep, hamster, dog, parrot, mouse), which fall back to the owl</li>
+      </ul></div>
+    </div>
+
+    <nav class="pager"><a href="samples.html"><span>Previous</span>Samples</a><a class="next" href="index.html"><span>Back to</span>Home</a></nav>
+  </main>
+</div>
+
+<footer class="site">
+  <div class="inner">
+    <img class="px" src="assets/art/mascot-blinking.png" alt="">
+    <span>Trains Project 3 · documentation for v1</span>
+    <span class="spacer"></span>
+    <nav class="legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></nav>
+    <a href="#">Back to top</a>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage &amp; characters · Trains Project 3</title>
+<meta name="description" content="The Trains Project stage: the 16 by 16 tile world, characters and placements, the character inspector, costumes, backgrounds, settings and controls during a run.">
+<link rel="icon" href="assets/art/appicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b> Project</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav">
+      <a href="index.html">Home</a>
+      <a href="guide.html">Guide</a>
+      <a href="editor.html">Code editor</a>
+      <a href="stage.html" aria-current="page">Stage &amp; characters</a>
+      <a href="blocks.html">Blocks</a>
+      <a href="engine.html">How a run works</a>
+      <a href="samples.html">Samples</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="toc" data-auto></aside>
+  <main class="doc">
+    <p class="eyebrow">Stage &amp; characters</p>
+    <h1>The stage and its characters</h1>
+    <p class="intro">The stage is where programs come to life: a square pixel world with characters, physics and a pen. This page explains how the world is measured, how characters are placed and configured, and how players interact during a run.</p>
+
+    <h2 id="the-world">The world</h2>
+    <p>The stage is always <strong>square</strong> and always shows the whole world. The world is <strong>16 × 16 tiles</strong> of 16 pixels each (256 × 256 pixels), drawn with hard, unsmoothed pixels at whatever size fits the screen.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 560 330" role="img" aria-label="Coordinate system: x from 0 to 15 left to right, y from 0 to 15 bottom to top; angles 0 right, 90 up, 180 left, 270 down">
+        <defs>
+          <pattern id="tile" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#fff1e8"/><path d="M16 0H0V16" fill="none" stroke="#c2c3c7" stroke-width="1"/></pattern>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#e8b04a"/></marker>
+        </defs>
+        <g transform="translate(40 20)">
+          <rect width="256" height="256" fill="url(#tile)" stroke="#0a0f15" stroke-width="3"/>
+          <path d="M128 0V256M0 128H256" stroke="#83769c" stroke-width="1.5"/>
+          <image href="assets/art/costume-owl-0.png" x="112" y="112" width="32" height="32" style="image-rendering:pixelated"/>
+          <text x="128" y="160" fill="#1d2b53" font-size="11" text-anchor="middle" font-family="monospace">(8, 8)</text>
+          <image href="assets/art/costume-cat-0.png" x="0" y="224" width="32" height="32" style="image-rendering:pixelated"/>
+          <text x="36" y="250" fill="#1d2b53" font-size="11" font-family="monospace">(1, 1)</text>
+          <g font-family="monospace" font-size="11" fill="#b3bfcc">
+            <text x="0" y="272">0</text><text x="120" y="272">8</text><text x="244" y="272">15</text>
+            <text x="-14" y="256">0</text><text x="-14" y="132">8</text><text x="-20" y="10">15</text>
+          </g>
+          <line x1="0" y1="290" x2="250" y2="290" stroke="#e8b04a" stroke-width="2" marker-end="url(#ah)"/>
+          <text x="258" y="294" fill="#e8b04a" font-size="13" font-family="monospace">x</text>
+          <line x1="-30" y1="256" x2="-30" y2="6" stroke="#e8b04a" stroke-width="2" marker-end="url(#ah)"/>
+          <text x="-34" y="-4" fill="#e8b04a" font-size="13" font-family="monospace">y</text>
+        </g>
+        <g transform="translate(440 150)" font-family="monospace" font-size="13" fill="#fff1e8">
+          <circle r="62" fill="none" stroke="#2c3e50" stroke-width="2"/>
+          <line x1="0" y1="0" x2="58" y2="0" stroke="#29adff" stroke-width="3" marker-end="url(#ah)"/>
+          <line x1="0" y1="0" x2="0" y2="-58" stroke="#29adff" stroke-width="3" marker-end="url(#ah)"/>
+          <line x1="0" y1="0" x2="-58" y2="0" stroke="#29adff" stroke-width="3" marker-end="url(#ah)"/>
+          <line x1="0" y1="0" x2="0" y2="58" stroke="#29adff" stroke-width="3" marker-end="url(#ah)"/>
+          <text x="68" y="5">0°</text><text x="-12" y="-70">90°</text><text x="-100" y="5">180°</text><text x="-16" y="82">270°</text>
+          <path d="M40 0A40 40 0 0 0 0 -40" fill="none" stroke="#e8b04a" stroke-width="2" marker-end="url(#ah)"/>
+          <text x="-60" y="112" fill="#b3bfcc" font-size="12">counter-clockwise</text>
+        </g>
+      </svg>
+    </div>
+    <ul>
+      <li><strong>Positions are in tiles.</strong> <em>x</em> runs 0–15 from left to right, and <em>y</em> runs 0–15 from <strong>bottom to top</strong>. A character’s position is its centre. Positions can be fractional, so <em>x 7.5</em> is fine.</li>
+      <li><strong>Angles are in degrees.</strong> 0° faces right, 90° up, 180° left and 270° down, counting counter-clockwise. Angles are always kept in 0–359.</li>
+      <li><strong>Sizes are in percent.</strong> At 100 % a character is 32 × 32 pixels, which is 2 × 2 tiles. Size ranges from 25 % to 300 %.</li>
+      <li><strong>Times are in seconds.</strong></li>
+    </ul>
+    <p>By default there are <strong>walls</strong> just outside the four edges, so characters bounce off the sides and <em>When bumping a wall</em> trains can fire. Walls can be switched off in <a href="#settings">Settings</a>, and then characters can leave the stage.</p>
+
+    <h2 id="characters-and-placements">Characters and placements</h2>
+    <p>A <strong>character</strong> is a type: its name, costume, colour, hearts, weight, body and trains. A character can stand on the stage several times. Each copy is a <strong>placement</strong> with its own position, angle and size. All placements of a character run the <strong>same trains</strong>, but each one runs them for itself. With three bricks placed, a <em>When ▶ is pressed</em> train runs three times, once per brick.</p>
+    <p>During a run, clones made by the <em>Clone</em> wagon behave like extra placements that exist only until the run stops.</p>
+
+    <h3 id="adding-characters">Adding characters</h3>
+    <p>Tap the brass <strong>+</strong> at the bottom of the dock and pick a costume. The new character:</p>
+    <ul>
+      <li>is named after its costume, with a number if the name is taken: “Cat”, “Cat 2”, “Cat 3”;</li>
+      <li>stands on the free tile closest to the middle of the stage;</li>
+      <li>starts with one empty <em>When ▶ is pressed</em> train, 3 hearts, normal weight and a physics body.</li>
+    </ul>
+
+    <h3 id="arranging-the-stage">Arranging the stage</h3>
+    <p>While the program is stopped, the stage is in <strong>design mode</strong>. The selected character is marked with pixel corner brackets.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>To…</th><th>iPad</th><th>Mac</th><th>Snaps to</th></tr></thead>
+      <tbody>
+        <tr><td>Select a character</td><td>Tap it</td><td>Click it</td><td>–</td></tr>
+        <tr><td>Move it</td><td>Drag</td><td>Drag</td><td>half tiles</td></tr>
+        <tr><td>Resize it</td><td>Pinch</td><td>Trackpad pinch, or scroll wheel over it</td><td>5 %, 25–300 %</td></tr>
+        <tr><td>Turn it</td><td>Two-finger rotate</td><td>Trackpad rotate, or <kbd>⌥</kbd>-drag around it</td><td>15°</td></tr>
+      </tbody>
+    </table></div>
+    <p>Pinching and rotating work anywhere on the stage when the selected character has only one placement. Dragging, pinching and rotating the same character at once count as <strong>one change</strong> for undo.</p>
+
+    <h2 id="the-character-inspector">The character inspector</h2>
+    <p>Tap the selected character’s chip in the dock (or choose <em>Edit character</em> from its menu) to open the inspector. Everything here is disabled while a program runs.</p>
+    <figure><img class="shot" src="assets/shots/inspector.jpg" alt="The character inspector over the stage"><figcaption>The inspector: name, costume grid, colour, hearts, weight, body and placements.</figcaption></figure>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Section</th><th>What it sets</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Name</td><td>Up to 20 characters. The name is shown in target pickers (“When bumping <em>Banana</em>”).</td></tr>
+        <tr><td class="k">Costume</td><td>The character’s picture (see <a href="#costumes">Costumes</a>).</td></tr>
+        <tr><td class="k">Colour</td><td>One of 8 colour variants of the costume (palette swaps).</td></tr>
+        <tr><td class="k">Hearts</td><td>0–10 hearts at the start of each run. The default is 3. The <em>Hearts</em> wagon changes them, and reaching 0 fires <em>When hearts run out</em>.</td></tr>
+        <tr><td class="k">Weight</td><td>Light, Normal or Heavy. Light characters fly twice as far when kicked; heavy ones push others around. See <a href="engine.html#physics">Physics</a>.</td></tr>
+        <tr><td class="k">Body</td><td><strong>Physics</strong>: moves, falls with gravity and collides. <strong>Fixed</strong>: a solid obstacle that never moves by itself. <strong>Ghost</strong>: floats through other characters but still notices touches.</td></tr>
+        <tr><td class="k">On stage</td><td>The list of placements with their tile positions. <em>Add to stage</em> places another copy on a free tile. The trash removes one; a character always keeps at least one.</td></tr>
+        <tr><td class="k">Delete character</td><td>After a confirmation. Not possible for the last character in a project. Trains that pointed at the deleted character (for example <em>When bumping Cat</em>) are repaired by falling back to their default target.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2 id="costumes">Costumes</h2>
+    <p>Characters are round, friendly 32 × 32 pixel creatures and objects, all painted with the same 32-colour palette:</p>
+    <div class="costumes">
+      <figure><img src="assets/art/costume-owl-0.png" alt=""><figcaption>Owl</figcaption></figure>
+      <figure><img src="assets/art/costume-cat-0.png" alt=""><figcaption>Cat</figcaption></figure>
+      <figure><img src="assets/art/costume-pig-0.png" alt=""><figcaption>Pig</figcaption></figure>
+      <figure><img src="assets/art/costume-monkey-0.png" alt=""><figcaption>Monkey</figcaption></figure>
+      <figure><img src="assets/art/costume-bear-0.png" alt=""><figcaption>Bear</figcaption></figure>
+      <figure><img src="assets/art/costume-frog-0.png" alt=""><figcaption>Frog</figcaption></figure>
+      <figure><img src="assets/art/costume-penguin-0.png" alt=""><figcaption>Penguin</figcaption></figure>
+      <figure><img src="assets/art/costume-dragon-0.png" alt=""><figcaption>Dragon</figcaption></figure>
+      <figure><img src="assets/art/costume-robot-0.png" alt=""><figcaption>Robot</figcaption></figure>
+      <figure><img src="assets/art/costume-ghost-0.png" alt=""><figcaption>Ghost</figcaption></figure>
+      <figure><img src="assets/art/costume-ball-0.png" alt=""><figcaption>Ball</figcaption></figure>
+      <figure><img src="assets/art/costume-banana-0.png" alt=""><figcaption>Banana</figcaption></figure>
+      <figure><img src="assets/art/costume-star-0.png" alt=""><figcaption>Star</figcaption></figure>
+      <figure><img src="assets/art/costume-brick-0.png" alt=""><figcaption>Brick</figcaption></figure>
+      <figure><img src="assets/art/costume-rocket-0.png" alt=""><figcaption>Rocket</figcaption></figure>
+      <figure><img src="assets/art/costume-car-0.png" alt=""><figcaption>Car</figcaption></figure>
+    </div>
+    <p>Each costume comes in <strong>8 colour variants</strong>, made by swapping palette colours at run time. Variant 1 is the original. The <em>Colour</em> wagon switches variants during a run:</p>
+    <div class="costumes">
+      <figure><img src="assets/art/costume-cat-0.png" alt=""><figcaption>1</figcaption></figure>
+      <figure><img src="assets/art/costume-cat-1.png" alt=""><figcaption>2</figcaption></figure>
+      <figure><img src="assets/art/costume-cat-2.png" alt=""><figcaption>3</figcaption></figure>
+      <figure><img src="assets/art/costume-cat-3.png" alt=""><figcaption>4</figcaption></figure>
+      <figure><img src="assets/art/costume-cat-4.png" alt=""><figcaption>5</figcaption></figure>
+      <figure><img src="assets/art/costume-cat-5.png" alt=""><figcaption>6</figcaption></figure>
+      <figure><img src="assets/art/costume-cat-6.png" alt=""><figcaption>7</figcaption></figure>
+      <figure><img src="assets/art/costume-cat-7.png" alt=""><figcaption>8</figcaption></figure>
+    </div>
+    <div class="warn"><p><strong>Work in progress.</strong> The costume grid also lists Cow, Sheep, Hamster, Dog, Parrot and Mouse. Their artwork has not been made yet, so in v1 they show the owl.</p></div>
+
+    <h2 id="settings">Settings</h2>
+    <p>The gear in the toolbar opens Settings. The stage settings belong to the project and cannot be changed while it runs. The sound and layout settings belong to the device.</p>
+    <figure><img class="shot" src="assets/shots/settings.jpg" alt="The settings popover"><figcaption>Settings: background, walls, gravity at start, music and sound effects.</figcaption></figure>
+    <h3 id="backgrounds">Backgrounds</h3>
+    <div class="bgs">
+      <figure><img src="assets/art/background-meadow.png" alt=""><figcaption>Meadow</figcaption></figure>
+      <figure><img src="assets/art/background-space.png" alt=""><figcaption>Space</figcaption></figure>
+      <figure><img src="assets/art/background-desert.png" alt=""><figcaption>Desert</figcaption></figure>
+      <figure><img src="assets/art/background-castle.png" alt=""><figcaption>Castle</figcaption></figure>
+      <figure><img src="assets/art/background-grid.png" alt=""><figcaption>Grid</figcaption></figure>
+      <figure><img src="assets/art/background-dusk.png" alt=""><figcaption>Dusk</figcaption></figure>
+    </div>
+    <p>The <em>Grid</em> background shows tile lines, with heavier lines every 4 tiles. It is the best choice for lessons about coordinates.</p>
+    <h3 id="all-settings">All settings</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Setting</th><th>Scope</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Background</td><td>project</td><td>One of the six themes above. New projects use Meadow.</td></tr>
+        <tr><td class="k">Walls</td><td>project</td><td>On by default. Solid edges that characters bounce off, and that the <em>bump</em> and <em>touching</em> wall options detect.</td></tr>
+        <tr><td class="k">Gravity at start</td><td>project</td><td>Off by default. Whether gravity is on when ▶ is pressed. The <em>Gravity</em> wagon can change it during the run.</td></tr>
+        <tr><td class="k">Music</td><td>device</td><td>On or off. The START theme plays on the home screen, the CODING tracks while you edit and the GAME tracks during a run. A WIN or FAIL jingle plays once when a run ends.</td></tr>
+        <tr><td class="k">Sound effects</td><td>device</td><td>The chiptune clacks, bumps and jingles.</td></tr>
+        <tr><td class="k">Side by side on wide screens</td><td>device, iPad only</td><td>Use the Mac layout (stage and code side by side) instead of swap mode.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2 id="controls-during-a-run">Controls during a run</h2>
+    <h3 id="touch-and-mouse">Touch and mouse</h3>
+    <ul>
+      <li><strong>Tap</strong> (or click) a character to fire its <em>When tapped</em> trains. If several overlap, the one created last (on top) gets the tap.</li>
+      <li>If a <em>Drag</em> wagon has allowed it, the player can <strong>drag</strong> the character, on the x axis, the y axis or both. Physics characters are pulled along and can be flung; fixed ones follow the finger exactly.</li>
+    </ul>
+    <h3 id="the-gamepad">The gamepad</h3>
+    <p>When any train uses <em>When a button is pressed</em>, or any condition checks <em>Button held</em>, an 8-bit gamepad appears beside the stage during the run: a d-pad (← → ↑ ↓) and two buttons, red <strong>A</strong> and orange <strong>B</strong>. Buttons report both press and release, so programs can tell when a button is held down.</p>
+    <figure><img class="shot" src="assets/shots/stage-running.jpg" alt="Banana chase running with the gamepad visible"><figcaption>Banana chase running: the d-pad on the left, A and B on the right, and the score tile “A 0” in the corner.</figcaption></figure>
+    <h3 id="keyboard-mac">Keyboard (Mac)</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Key</th><th>Acts as</th></tr></thead>
+      <tbody>
+        <tr><td class="k"><kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd></td><td>The d-pad</td></tr>
+        <tr><td class="k"><kbd>Space</kbd></td><td>Button A</td></tr>
+        <tr><td class="k"><kbd>Return</kbd> / <kbd>Enter</kbd></td><td>Button B</td></tr>
+        <tr><td class="k"><kbd>Q</kbd> / <kbd>E</kbd></td><td>Tilt left / tilt right</td></tr>
+        <tr><td class="k"><kbd>⌘R</kbd> · <kbd>⌘.</kbd></td><td>Run · Stop</td></tr>
+        <tr><td class="k"><kbd>⌘Z</kbd> · <kbd>⇧⌘Z</kbd></td><td>Undo · Redo</td></tr>
+      </tbody>
+    </table></div>
+    <p>Keys only drive the game while a program runs. Typing into a text field and shortcuts with <kbd>⌘</kbd>, <kbd>⌃</kbd> or <kbd>⌥</kbd> pass through normally.</p>
+    <h3 id="tilt-ipad">Tilt (iPad)</h3>
+    <p>Tilting the iPad more than <strong>20°</strong> to the left or right fires <em>When tilted</em> trains for that side. It must come back within 15° of level before the same side can fire again. Tilt is measured relative to how the screen is currently oriented, so it works the same in any landscape or portrait position.</p>
+
+    <h2 id="what-the-stage-shows">What the stage shows</h2>
+    <ul>
+      <li><strong>Speech bubbles</strong> from <em>Say</em>, in the pixel font.</li>
+      <li><strong>Hearts</strong>: when a character’s hearts change, hearts fly out of it and the new count floats up.</li>
+      <li><strong>Message ripples</strong>: <em>Send</em> draws three expanding pixel rings in the message’s colour.</li>
+      <li><strong>A puff</strong> of white pixels where a character is removed.</li>
+      <li><strong>Variable tiles</strong>: <em>Show variable</em> puts a small “A 3” tile in the corner that updates live.</li>
+      <li><strong>The pen</strong> draws pixel lines behind characters with the pen down (see the <a href="samples.html#pen-spiral">Pen spiral</a>).</li>
+      <li><strong>Win / lose</strong>: confetti and a flash, or a red flash with falling grey pixels.</li>
+    </ul>
+
+    <nav class="pager"><a href="editor.html"><span>Previous</span>Code editor</a><a class="next" href="blocks.html"><span>Next</span>Blocks</a></nav>
+  </main>
+</div>
+
+<footer class="site">
+  <div class="inner">
+    <img class="px" src="assets/art/mascot-blinking.png" alt="">
+    <span>Trains Project 3 · documentation for v1</span>
+    <span class="spacer"></span>
+    <nav class="legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></nav>
+    <a href="#">Back to top</a>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

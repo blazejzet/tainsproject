@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trains Project 3</title>
+<meta name="description" content="Trains Project 3 is an 8-bit coding playground for kids on iPad and Mac. You program characters by building trains: the locomotive is the event, the wagons are the commands.">
+<link rel="icon" href="assets/art/appicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b> Project</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav">
+      <a href="index.html" aria-current="page">Home</a>
+      <a href="guide.html">Guide</a>
+      <a href="editor.html">Code editor</a>
+      <a href="stage.html">Stage &amp; characters</a>
+      <a href="blocks.html">Blocks</a>
+      <a href="engine.html">How a run works</a>
+      <a href="samples.html">Samples</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <img class="hero-mascot px" src="assets/art/mascot.png" alt="The Trains Project mascot, a round red locomotive face">
+      <h1><b>Trains</b> Project 3</h1>
+      <p class="lede">An 8-bit coding playground for kids aged 5–10. You program characters by building <strong>trains</strong>: the locomotive is the event, and the wagons are the commands.</p>
+      <div class="badges">
+        <span class="badge">iPadOS 26</span>
+        <span class="badge">macOS 26</span>
+        <span class="badge alt">English &amp; Polish</span>
+        <span class="badge alt">No reading required</span>
+      </div>
+      <a class="btn" href="guide.html">Start the guide</a>
+      <a class="btn ghost" href="blocks.html">Block reference</a>
+    </div>
+    <img class="hero-shot" src="assets/shots/home.jpg" alt="The Trains Project home screen: the dusk sky, the logo, project cards and sample cards">
+  </div>
+  <svg class="hero-hills" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+    <polygon fill="#2e2752" points="0,70 80,70 80,60 160,60 160,50 260,50 260,62 360,62 360,44 470,44 470,58 560,58 560,40 680,40 680,54 780,54 780,46 900,46 900,60 1000,60 1000,48 1100,48 1100,58 1200,58 1200,120 0,120"/>
+    <polygon fill="#1d3d4f" points="0,92 120,92 120,84 240,84 240,94 380,94 380,80 520,80 520,90 660,90 660,82 820,82 820,92 960,92 960,84 1100,84 1100,90 1200,90 1200,120 0,120"/>
+    <rect y="106" width="1200" height="14" fill="#16202b"/>
+    <rect y="104" width="1200" height="3" fill="#8b97a5"/>
+  </svg>
+</section>
+
+<section class="section">
+  <p class="eyebrow">The idea</p>
+  <h2 id="a-program-is-a-train">A program is a train</h2>
+  <div class="grid two">
+    <div>
+      <p>Every character on the stage owns some trains. A train always starts with a <strong>locomotive</strong>, which says <em>when</em> the train runs: when ▶ is pressed, when the character is tapped, when it bumps into a wall, when a message arrives, and so on.</p>
+      <p>Behind the locomotive come the <strong>wagons</strong>. Each wagon is one command: move, turn, say something, wait, repeat, switch gravity on, add 1 to a variable. The train runs its wagons from left to right.</p>
+      <p>Wagons are colour-coded by category and painted with a pixel icon, so children can read a program without reading words. While the program runs, the wagon that is working right now lights up.</p>
+    </div>
+    <div>
+      <div class="yard" style="margin-top:0">
+        <p class="yard-title">“When ▶ is pressed, say Hi, then hop three times”</p>
+        <div class="train">
+          <div class="loco"><div class="body"><img src="assets/art/glyph-on-start.png" alt=""></div><div class="cap"><b>When ▶ pressed</b></div></div>
+          <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“Hi!” · 2 s</div></div>
+          <div class="wg c-control"><div class="body"><img src="assets/art/glyph-repeat.png" alt=""></div><div class="cap"><b>Repeat</b>3 times</div></div>
+          <div class="siding c-control"><span class="label">×3</span>
+            <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-kick.png" alt=""></div><div class="cap"><b>Kick</b>up · 5</div></div>
+            <div class="wg c-control"><div class="body"><img src="assets/art/glyph-wait.png" alt=""></div><div class="cap"><b>Wait</b>1 s</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <p class="eyebrow">What children learn</p>
+  <h2 id="six-kinds-of-wagon-six-big-ideas">Six kinds of wagon, six big ideas</h2>
+  <div class="grid three">
+    <div class="card c-events"><span class="chip lg"><img src="assets/art/glyph-on-message.png" alt=""></span><h3 id="events">Events</h3><p>Red locomotives. Programs react to the world: taps, buttons, bumps, timers and messages.</p></div>
+    <div class="card c-motion"><span class="chip lg"><img src="assets/art/glyph-move.png" alt=""></span><h3 id="motion">Motion</h3><p>Blue wagons. Move in tiles, turn in degrees, jump to a spot, get a physics kick.</p></div>
+    <div class="card c-looks"><span class="chip lg"><img src="assets/art/glyph-say.png" alt=""></span><h3 id="looks">Looks</h3><p>Purple wagons. Speech bubbles, costumes, colours, size, fading and a drawing pen.</p></div>
+    <div class="card c-control"><span class="chip lg"><img src="assets/art/glyph-repeat.png" alt=""></span><h3 id="control">Control</h3><p>Orange wagons. Waiting, loops, if/else, messages, clones, and winning or losing.</p></div>
+    <div class="card c-physics"><span class="chip lg"><img src="assets/art/glyph-gravity.png" alt=""></span><h3 id="physics">Physics</h3><p>Green wagons. Gravity, weight, solid and ghost bodies, magnets, joints and dragging.</p></div>
+    <div class="card c-data"><span class="chip lg"><img src="assets/art/glyph-set.png" alt=""></span><h3 id="data">Data</h3><p>Yellow wagons. Four number boxes A–D, hearts, and showing a score on the stage.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <p class="eyebrow">The workspace</p>
+  <h2 id="stage-and-code">Stage and code</h2>
+  <div class="shots">
+    <figure><img class="shot" src="assets/shots/stage-running.jpg" alt="The stage during a run, with the on-screen gamepad"><figcaption>The square stage, 16 × 16 tiles. During a run, an 8-bit gamepad appears when the program listens to buttons.</figcaption></figure>
+    <figure><img class="shot" src="assets/shots/code-running.jpg" alt="The code editor during a run, with the active wagons lit up"><figcaption>The code editor. Trains are parked on rails; while running, the active wagons glow. A mini stage floats in the corner.</figcaption></figure>
+  </div>
+  <p>On iPad the stage and the code take turns on the full screen (<strong>swap mode</strong>), with a live mini stage floating over the code. On Mac they sit <strong>side by side</strong> with a draggable divider. <a href="guide.html#the-workspace">Tour the workspace →</a></p>
+</section>
+
+<section class="section">
+  <p class="eyebrow">Documentation</p>
+  <h2 id="read-on">Read on</h2>
+  <div class="grid four">
+    <a class="card" href="guide.html"><h3 id="guide">Guide</h3><p>Home screen, projects, the workspace and your first program, step by step.</p><span class="more">Open →</span></a>
+    <a class="card" href="editor.html"><h3 id="code-editor">Code editor</h3><p>Building trains: dragging, coupling, nesting, parameters, values and conditions.</p><span class="more">Open →</span></a>
+    <a class="card" href="stage.html"><h3 id="stage-amp-characters">Stage &amp; characters</h3><p>The tile world, placing characters, the inspector, settings and controls.</p><span class="more">Open →</span></a>
+    <a class="card" href="blocks.html"><h3 id="blocks">Blocks</h3><p>Every locomotive and wagon, with its parameters, defaults and exact behaviour.</p><span class="more">Open →</span></a>
+    <a class="card" href="engine.html"><h3 id="how-a-run-works">How a run works</h3><p>Runners, threads, the 60 Hz scheduler, events, physics and win/lose.</p><span class="more">Open →</span></a>
+    <a class="card" href="samples.html"><h3 id="samples">Samples</h3><p>The four built-in projects, train by train.</p><span class="more">Open →</span></a>
+    <a class="card" href="privacy.html"><h3>Privacy</h3><p>Trains Project collects no data at all. Read the privacy policy and the terms of use.</p><span class="more">Open →</span></a>
+    <a class="card" href="editor.html#values"><h3 id="values-amp-conditions">Values &amp; conditions</h3><p>Numbers, random, variables, properties, the timer, comparisons and touching.</p><span class="more">Open →</span></a>
+  </div>
+</section>
+
+<div style="height:72px"></div>
+
+<footer class="site">
+  <div class="inner">
+    <img class="px" src="assets/art/mascot-blinking.png" alt="">
+    <span>Trains Project 3 · documentation for v1</span>
+    <span class="spacer"></span>
+    <nav class="legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></nav>
+    <span>All art on this site is drawn by the app itself.</span>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

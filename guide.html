@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide · Trains Project 3</title>
+<meta name="description" content="Getting started with Trains Project 3: the home screen, projects, the workspace on iPad and Mac, and a first program.">
+<link rel="icon" href="assets/art/appicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b> Project</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav">
+      <a href="index.html">Home</a>
+      <a href="guide.html" aria-current="page">Guide</a>
+      <a href="editor.html">Code editor</a>
+      <a href="stage.html">Stage &amp; characters</a>
+      <a href="blocks.html">Blocks</a>
+      <a href="engine.html">How a run works</a>
+      <a href="samples.html">Samples</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="toc" data-auto></aside>
+  <main class="doc">
+    <p class="eyebrow">Guide</p>
+    <h1>Getting started</h1>
+    <p class="intro">This page walks through the app from the moment it opens: the home screen, projects, the workspace on iPad and Mac, and a first program built step by step.</p>
+
+    <h2 id="the-home-screen">The home screen</h2>
+    <p>The app opens on a pixel-art evening scene: a violet-to-amber sky with stars and a crescent moon, teal hills and a little red locomotive steaming along a rail at the bottom. The first time after launch a short startup sequence plays. The letters of <em>Trains Project</em> drop in, the round red mascot puffs steam, and the menu cards rise into place. Tap anywhere to skip it. With <em>Reduce Motion</em> switched on, the backdrop and mascot stay still.</p>
+    <figure><img class="shot" src="assets/shots/home.jpg" alt="Home screen with My projects and Samples"><figcaption>Home: the “New project” card, your projects, and the built-in samples (marked with a star).</figcaption></figure>
+    <p>The <strong>START</strong> theme plays on the home screen. The cards are arranged in two sections:</p>
+    <ul>
+      <li><strong>My projects</strong> starts with the <strong>New project</strong> card, followed by your saved projects, newest first. Each card shows a pixel thumbnail of the project’s stage.</li>
+      <li><strong>Samples</strong> are four ready-made projects: <a href="samples.html#bouncy-ball">Bouncy ball</a>, <a href="samples.html#banana-chase">Banana chase</a>, <a href="samples.html#pen-spiral">Pen spiral</a> and <a href="samples.html#ping-pong">Ping-pong</a>. Opening a sample creates a fresh copy in <em>My projects</em>, so the original is never changed.</li>
+    </ul>
+    <div class="note"><p><strong>First launch.</strong> On the very first launch the four samples are also copied into <em>My projects</em>, so a new user has something to open straight away.</p></div>
+
+    <h3 id="managing-projects">Managing projects</h3>
+    <p>Long-press a project card on iPad, or right-click it on Mac, to open its menu:</p>
+    <ul>
+      <li><strong>Rename</strong> gives the project a new name.</li>
+      <li><strong>Duplicate</strong> makes a copy called “<em>name</em> 2”.</li>
+      <li><strong>Delete</strong> removes the project after a confirmation. This can’t be undone.</li>
+    </ul>
+    <p>A new project is named “Project <em>n</em>”. It contains one character, an owl standing in the middle of the stage, with one empty <em>When ▶ is pressed</em> train.</p>
+    <p>There is no Save button. Every change is written to disk about a second after you make it, and again right before every run.</p>
+
+    <h2 id="the-workspace">The workspace</h2>
+    <p>Opening a project shows the workspace. It has four parts: a slim <strong>toolbar</strong> along the top, the <strong>character dock</strong> down the left edge, the square <strong>stage</strong>, and the <strong>code editor</strong> with its wagon depot at the bottom.</p>
+
+    <h3 id="the-toolbar">The toolbar</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Control</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Home</td><td>Back to the home screen. The project is already saved.</td></tr>
+        <tr><td class="k">Project name</td><td>Tap to rename the project (not while running).</td></tr>
+        <tr><td class="k">Undo / Redo</td><td>Step back and forward through edits, up to 100 steps. Every gesture is one step: a drop, a parameter change, moving a character. Disabled while a program runs. On Mac: <kbd>⌘Z</kbd> and <kbd>⇧⌘Z</kbd>.</td></tr>
+        <tr><td class="k">Throttle</td><td>The brass lever starts and stops the program. Tap it, or drag the lever to the right to run and back to the left to stop. On Mac: <kbd>⌘R</kbd> runs and <kbd>⌘.</kbd> stops.</td></tr>
+        <tr><td class="k">Signal lamp</td><td>Next to the throttle. Red means stopped and green means running.</td></tr>
+        <tr><td class="k">Stage / Code switch</td><td>iPad swap mode only: shows the stage or the code full-screen.</td></tr>
+        <tr><td class="k">Settings (gear)</td><td>Background, walls, gravity at start, music, sound effects and (on iPad) the layout. See <a href="stage.html#settings">Settings</a>.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 id="the-character-dock">The character dock</h3>
+    <p>The left edge lists the project’s characters as costume chips.</p>
+    <ul>
+      <li>Tap a chip to <strong>select</strong> that character. The code editor always shows the selected character’s trains.</li>
+      <li>Tap the selected chip again (it shows a pencil) to open the <a href="stage.html#the-character-inspector">character inspector</a>.</li>
+      <li>Tap the brass <strong>+</strong> to add a new character from the costume grid.</li>
+    </ul>
+
+    <h3 id="ipad-swap-mode">iPad: swap mode</h3>
+    <p>On iPad the stage and the code editor each take the full screen.</p>
+    <ul>
+      <li>Switch between them with the <strong>Stage / Code</strong> switch in the toolbar, or by swiping sideways. On the stage pane, swipe anywhere around the stage. On the code pane, swipe in the thin strips along the screen edges, so that drags on the code canvas are not mistaken for swipes.</li>
+      <li>While coding, a <strong>live mini stage</strong> floats in a corner. Tap it to jump to the stage, or drag it to another corner. It never covers the wagon depot.</li>
+      <li>Settings has a <em>Side by side on wide screens</em> switch for people who prefer the Mac layout on a large iPad.</li>
+    </ul>
+    <div class="shots">
+      <figure><img class="shot" src="assets/shots/new-stage.jpg" alt="A new project on the stage pane"><figcaption>Stage pane: a brand-new project with its owl selected.</figcaption></figure>
+      <figure><img class="shot" src="assets/shots/new-move.jpg" alt="The code pane with a Move wagon coupled to a start locomotive"><figcaption>Code pane: the live mini stage sits in the top-right corner.</figcaption></figure>
+    </div>
+
+    <h3 id="mac-side-by-side">Mac: side by side</h3>
+    <p>On Mac the stage is on the left and the code is on the right, with a pixel rail between them. Drag the rail to resize. The stage can take from 25 % to 70 % of the window, and the app remembers the split. The keyboard doubles as the gamepad, see <a href="stage.html#controls-during-a-run">Controls</a>.</p>
+
+    <h2 id="your-first-program">Your first program</h2>
+    <p>This builds a character that greets you, hops, and spins when tapped. The steps work the same on iPad and Mac.</p>
+    <ol class="steps">
+      <li><strong>Create a project.</strong> On the home screen tap <em>New project</em>. You get an owl in the middle of the stage.</li>
+      <li><strong>Open the code.</strong> On iPad tap the <em>Code</em> half of the switch. The owl already has a red <em>When ▶ is pressed</em> locomotive parked on a rail.</li>
+      <li><strong>Add a speech bubble.</strong> In the depot at the bottom, pick the purple <em>Looks</em> tab and tap the <em>Say</em> wagon. Tapping a wagon couples it to the end of the selected train. You hear a “clack”.</li>
+      <li><strong>Change what it says.</strong> Tap the text plate on the Say wagon and type <code>Hi!</code>. Every parameter has a sensible default, so you only change what you need.</li>
+      <li><strong>Add a hop.</strong> Pick the orange <em>Control</em> tab and drag a <em>Repeat</em> wagon behind the Say wagon. When you lift it near the rail, a gap opens where it will land. Then drag a blue <em>Move</em> wagon (from <em>Motion</em>) into the repeat’s empty slot, and a <em>Wait</em> after it.</li>
+      <li><strong>Set the parameters.</strong> On Move, tap the direction plate and choose ↑ <em>up</em>. Add a second Move with direction ↓ <em>down</em> after the Wait. Now the owl hops three times.</li>
+      <li><strong>React to a tap.</strong> Pick the red <em>Locomotives</em> tab and tap <em>When tapped</em>. A new train appears below the first one. Couple a <em>Turn</em> wagon to it and set its degrees to 360.</li>
+      <li><strong>Run it.</strong> Push the throttle (or press <kbd>⌘R</kbd>). The signal turns green, the <em>GAME</em> music starts, and each wagon lights up as it runs. Tap the owl on the stage to make it spin.</li>
+      <li><strong>Stop.</strong> Pull the throttle back. Everything returns to exactly where it was before the run.</li>
+    </ol>
+    <div class="yard">
+      <p class="yard-title">The finished program</p>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-start.png" alt=""></div><div class="cap"><b>When ▶ pressed</b></div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“Hi!” · 2 s</div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-repeat.png" alt=""></div><div class="cap"><b>Repeat</b>3</div></div>
+        <div class="siding c-control"><span class="label">×3</span>
+          <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-move.png" alt=""></div><div class="cap"><b>Move</b>up · 1 tile</div></div>
+          <div class="wg c-control"><div class="body"><img src="assets/art/glyph-wait.png" alt=""></div><div class="cap"><b>Wait</b>0.5 s</div></div>
+          <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-move.png" alt=""></div><div class="cap"><b>Move</b>down · 1 tile</div></div>
+        </div>
+      </div>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-tap.png" alt=""></div><div class="cap"><b>When tapped</b></div></div>
+        <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-turn.png" alt=""></div><div class="cap"><b>Turn</b>left · 360°</div></div>
+      </div>
+    </div>
+    <div class="tip"><p><strong>Tip.</strong> Tapping a locomotive or wagon also <em>selects</em> its train. Wagons you tap in the depot are added to the end of the selected train, or of the character’s last train when none is selected. If the character has no trains at all, a new <em>When ▶ is pressed</em> train is made for the wagon.</p></div>
+
+    <h2 id="running-and-stopping">Running and stopping</h2>
+    <p>While a program runs:</p>
+    <ul>
+      <li>The code is <strong>read-only</strong>. A small “Running” badge appears and the active wagons of the selected character glow. Select another character in the dock to watch their trains instead.</li>
+      <li>The stage switches from design mode to live mode. Tapping a character now fires its <em>When tapped</em> trains instead of selecting it.</li>
+      <li>If any train listens to gamepad buttons, an <strong>on-screen gamepad</strong> appears next to the stage: a d-pad and <em>A</em>/<em>B</em> buttons.</li>
+    </ul>
+    <p><strong>Stopping</strong> ends every train, removes all clones and restores the design exactly: positions, angles, sizes, variables, gravity, and the pen drawing. A run never changes your project. That is why you can always run again from the same starting point.</p>
+    <p>When a <em>Win</em> or <em>Lose</em> wagon runs, the world freezes and confetti (or a red flash) appears. A <strong>“You win!”</strong> or <strong>“Game over”</strong> card then offers <em>Play again</em> or <em>Edit</em>, and the WIN or FAIL jingle plays before the coding music returns.</p>
+
+    <h2 id="languages-and-accessibility">Languages and accessibility</h2>
+    <ul>
+      <li>The app is fully translated into <strong>English and Polish</strong>, following the device language. The pixel font includes Polish letters.</li>
+      <li>No step requires reading. Every wagon is recognisable by its colour and icon, and parameters are shown as icons wherever one reads better than a word.</li>
+      <li>Every control has a VoiceOver label. Reduce Motion stills the home backdrop and the mascot.</li>
+      <li>Touch targets are at least 44 points, and iPad gives haptic feedback when you pick up, hover over and drop wagons.</li>
+    </ul>
+
+    <nav class="pager"><a href="index.html"><span>Previous</span>Home</a><a class="next" href="editor.html"><span>Next</span>Code editor</a></nav>
+  </main>
+</div>
+
+<footer class="site">
+  <div class="inner">
+    <img class="px" src="assets/art/mascot-blinking.png" alt="">
+    <span>Trains Project 3 · documentation for v1</span>
+    <span class="spacer"></span>
+    <nav class="legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></nav>
+    <a href="#">Back to top</a>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

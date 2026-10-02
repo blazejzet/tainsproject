@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How a run works · Trains Project 3</title>
+<meta name="description" content="How Trains Project runs programs: runners and threads, the 60 Hz scheduler, events, messages, clones, physics, contacts and win or lose.">
+<link rel="icon" href="assets/art/appicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b> Project</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav">
+      <a href="index.html">Home</a>
+      <a href="guide.html">Guide</a>
+      <a href="editor.html">Code editor</a>
+      <a href="stage.html">Stage &amp; characters</a>
+      <a href="blocks.html">Blocks</a>
+      <a href="engine.html" aria-current="page">How a run works</a>
+      <a href="samples.html">Samples</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="toc" data-auto></aside>
+  <main class="doc">
+    <p class="eyebrow">How a run works</p>
+    <h1>Inside a run</h1>
+    <p class="intro">What exactly happens between pushing the throttle and pulling it back. This page is for teachers who want to explain surprising behaviour, and for developers working on the engine. The rules are deterministic: the same program, with the same random numbers, always does the same thing.</p>
+
+    <h2 id="design-and-run-are-separate">Design and run are separate</h2>
+    <p>A project is a <em>design</em>: characters, their placements and their trains. Pressing ▶ takes a snapshot of the design and runs that. Nothing a running program does is ever written back to the project. Stopping throws the run away and shows the design again:</p>
+    <ul>
+      <li>every character returns to its designed position, angle, size, costume, colour, hearts and body;</li>
+      <li>clones disappear, and removed characters come back;</li>
+      <li>variables, gravity, magnets, joints, the pen drawing and shown variable tiles are reset.</li>
+    </ul>
+    <p>While a run is on, editing is locked (undo, redo and all edits are ignored), so the run and the design never get out of step.</p>
+
+    <h2 id="runners-and-threads">Runners and threads</h2>
+    <p>Two words explain almost everything:</p>
+    <ul>
+      <li>A <strong>runner</strong> is one character on the stage during a run. Every placement becomes a runner when ▶ is pressed, and every clone is a new runner. Each runner keeps its own state: hearts, size, opacity, costume, colour, body, weight, pen and <em>every</em> timers.</li>
+      <li>A <strong>thread</strong> is one train running on one runner. When an event fires for a runner, every train of that character whose locomotive matches starts a thread on that runner. A thread remembers where it is in the train (including inside nested loops), how many loop passes are left, and what it is waiting for.</li>
+    </ul>
+    <p>Because all of this state lives in the thread and the runner, never in the wagons themselves, the same train can run on five bricks at once without the bricks interfering with each other.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-label="One character with two trains and two placements produces two runners, each with its own threads">
+        <g font-family="Inter, sans-serif" font-size="13" fill="#fff1e8">
+          <rect x="10" y="20" width="190" height="190" fill="#1f2e3c" stroke="#0a0f15" stroke-width="3"/>
+          <text x="24" y="44" font-weight="700">Character “Brick”</text>
+          <text x="24" y="72" fill="#b3bfcc">trains:</text>
+          <rect x="24" y="82" width="160" height="26" fill="#ff004d"/><text x="32" y="100" fill="#0a0f15" font-weight="700">▶ start → …</text>
+          <rect x="24" y="114" width="160" height="26" fill="#ff004d"/><text x="32" y="132" fill="#0a0f15" font-weight="700">bump wall → …</text>
+          <text x="24" y="166" fill="#b3bfcc">placements:</text>
+          <text x="24" y="190">(4, 5) and (12, 5)</text>
+
+          <path d="M200 115 H250" stroke="#e8b04a" stroke-width="3"/><text x="206" y="106" fill="#e8b04a" font-size="12">▶ run</text>
+
+          <rect x="250" y="20" width="170" height="85" fill="#16202b" stroke="#29adff" stroke-width="3"/>
+          <text x="264" y="44" font-weight="700">Runner 1 · brick at (4, 5)</text>
+          <text x="264" y="68" fill="#b3bfcc">own hearts, size, pen…</text>
+          <text x="264" y="90" fill="#b3bfcc">order 0</text>
+          <rect x="250" y="125" width="170" height="85" fill="#16202b" stroke="#29adff" stroke-width="3"/>
+          <text x="264" y="149" font-weight="700">Runner 2 · brick at (12, 5)</text>
+          <text x="264" y="173" fill="#b3bfcc">own hearts, size, pen…</text>
+          <text x="264" y="195" fill="#b3bfcc">order 1</text>
+
+          <path d="M420 62 H470 M420 167 H470" stroke="#e8b04a" stroke-width="3"/>
+          <rect x="470" y="34" width="160" height="26" fill="#00e436"/><text x="478" y="52" fill="#0a0f15" font-weight="700">thread: start train</text>
+          <rect x="470" y="66" width="160" height="26" fill="#2c3e50"/><text x="478" y="84" fill="#b3bfcc">bump: not fired yet</text>
+          <rect x="470" y="140" width="160" height="26" fill="#00e436"/><text x="478" y="158" fill="#0a0f15" font-weight="700">thread: start train</text>
+          <rect x="470" y="172" width="160" height="26" fill="#00e436"/><text x="478" y="190" fill="#0a0f15" font-weight="700">thread: bump train</text>
+        </g>
+      </svg>
+    </div>
+
+    <h2 id="the-60-hz-clock">The 60 Hz clock</h2>
+    <p>The engine simulates in fixed steps of <strong>1/60 of a second</strong>. Each screen frame, the real time that passed is added to an accumulator, and as many whole steps as fit are run. A run therefore behaves the same on a fast Mac and a slow iPad. If the device stalls, at most 5 steps are caught up per frame and the rest of the lost time is dropped, so the program slows down rather than jumping ahead.</p>
+    <p>One step does this, always in the same order:</p>
+    <ol class="steps">
+      <li><strong>Fire timers.</strong> <em>Every few seconds</em> trains whose time has come are started (if they are not still running).</li>
+      <li><strong>Run threads in a stable order.</strong> Threads are sorted by runner (placements in character order first, then clones in the order they were made), then by the train’s position in the character’s list. Each thread runs until it reaches a wagon that takes time, or until it finishes.</li>
+      <li><strong>Publish activity.</strong> The set of running trains and wagons per runner is handed to the editor, which lights them up.</li>
+    </ol>
+    <p>After the step, the stage lets SpriteKit simulate physics, then checks which characters started touching each other or a wall, and turns those into <em>bump</em> events. Trains started by events, messages and clones begin on the <strong>next</strong> step.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 640 170" role="img" aria-label="Each frame: advance the engine by elapsed time in 60 Hz steps, simulate physics, detect contacts, draw pen trails">
+        <g font-family="Inter, sans-serif" font-size="13" fill="#fff1e8" font-weight="600">
+          <defs><marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#e8b04a"/></marker></defs>
+          <rect x="10" y="40" width="130" height="64" fill="#1f2e3c" stroke="#0a0f15" stroke-width="3"/><text x="22" y="66">Screen frame</text><text x="22" y="88" fill="#b3bfcc" font-weight="400">elapsed time dt</text>
+          <path d="M140 72 H170" stroke="#e8b04a" stroke-width="3" marker-end="url(#a2)"/>
+          <rect x="172" y="20" width="170" height="104" fill="#16202b" stroke="#ffa300" stroke-width="3"/><text x="184" y="44">Engine steps</text><text x="184" y="66" fill="#b3bfcc" font-weight="400">0–5 × 1/60 s</text><text x="184" y="88" fill="#b3bfcc" font-weight="400">timers → threads</text><text x="184" y="110" fill="#b3bfcc" font-weight="400">→ light up wagons</text>
+          <path d="M342 72 H372" stroke="#e8b04a" stroke-width="3" marker-end="url(#a2)"/>
+          <rect x="374" y="40" width="110" height="64" fill="#1f2e3c" stroke="#0a0f15" stroke-width="3"/><text x="386" y="66">Physics</text><text x="386" y="88" fill="#b3bfcc" font-weight="400">SpriteKit</text>
+          <path d="M484 72 H514" stroke="#e8b04a" stroke-width="3" marker-end="url(#a2)"/>
+          <rect x="516" y="40" width="114" height="64" fill="#1f2e3c" stroke="#0a0f15" stroke-width="3"/><text x="528" y="66">Contacts,</text><text x="528" y="88">pen, bubbles</text>
+          <path d="M573 104 V150 H257 V128" stroke="#ff004d" stroke-width="3" fill="none" marker-end="url(#a2)"/><text x="268" y="144" fill="#ff004d" font-weight="400">events start trains on the next step</text>
+        </g>
+      </svg>
+    </div>
+
+    <h2 id="instant-wagons-and-wagons-that-take-time">Instant wagons and wagons that take time</h2>
+    <p>Wagons come in two kinds:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Kind</th><th>Wagons</th><th>Behaviour</th></tr></thead>
+      <tbody>
+        <tr><td class="k"><span class="tag dur">takes time</span></td><td>Move, Turn, Say, Size, Fade, Wait, Wait until</td><td>The thread <em>parks</em> on the wagon. The animation advances a little on each step, and the thread moves on in the step where it completes. Wait until checks its condition once per step.</td></tr>
+        <tr><td class="k"><span class="tag inst">instant</span></td><td>All others</td><td>Done immediately. The thread carries on to the next wagon within the same step.</td></tr>
+      </tbody>
+    </table></div>
+    <p>So a train of <em>Set A = 0 · Change A + 1 · Show A · Move 1</em> does the first three in the same 1/60 s and then spends a quarter of a second on the move.</p>
+    <h3 id="loops-can-t-freeze-the-app">Loops can’t freeze the app</h3>
+    <p>Two safety rules keep runaway programs harmless:</p>
+    <ul>
+      <li>A thread may run at most <strong>256 instant wagons per step</strong>. After that it waits for the next step.</li>
+      <li>If one pass of a <em>Repeat</em> or <em>Forever</em> contains no wagon that takes time, the loop still pauses until the next step after that pass. A <em>Forever</em> made of instant wagons therefore runs 60 times a second, never thousands of times per frame.</li>
+    </ul>
+
+    <h2 id="events-in-detail">Events in detail</h2>
+    <h3 id="no-double-starts">No double starts</h3>
+    <p>If an event fires for a runner while that very train is already running on it, the event is <strong>ignored</strong>. Tapping a character five times while its <em>When tapped</em> train is still turning starts nothing new. Every train that listens to the event starts, not only the first one.</p>
+    <h3 id="messages-restart">Messages restart</h3>
+    <p>The one exception is <em>When a message arrives</em>. A message <strong>restarts</strong> the train from its first wagon if it is already running, as Scratch broadcasts do. A speech bubble the old run was showing is removed. This is what makes message ping-pong between characters work (see the <a href="samples.html#ping-pong">Ping-pong sample</a>).</p>
+    <h3 id="broadcast-events">Broadcast events</h3>
+    <p>Buttons, tilts and messages go to <strong>every runner</strong>, in runner order. Taps go only to the tapped character. Bumps go to both characters involved: if the cat bumps the banana, the cat’s <em>When bumping Banana</em> and the banana’s <em>When bumping Cat</em> both fire.</p>
+    <h3 id="contacts">Contacts</h3>
+    <p>Touching is measured geometrically from each character’s shape, independently of the physics engine. That is why ghosts, which pass through others, still detect touches. A contact begins when the shapes come within 1 pixel of each other and ends once they are more than 2.5 pixels apart. The gap between the two numbers stops a character resting on the floor from bumping it again and again.</p>
+
+    <h2 id="values-at-run-time">Values at run time</h2>
+    <ul>
+      <li>Variables A–D are <strong>global</strong> and start at <strong>0</strong> on every run.</li>
+      <li><em>Random</em> draws a fresh whole number every time it is read. The engine uses a seeded generator, so tests can replay a run exactly.</li>
+      <li><em>x</em> and <em>y</em> are read in tiles, <em>angle</em> in 0–359, <em>size</em> in percent, and the <em>timer</em> in seconds since the start (it advances in 1/60 s steps).</li>
+      <li>A value that would not be a valid number (for example from a huge multiplication) reads as 0. Variables only ever store finite numbers.</li>
+      <li>Two numbers within one millionth of each other compare as equal.</li>
+    </ul>
+
+    <h2 id="clones-and-removal">Clones and removal</h2>
+    <ul>
+      <li><em>Clone</em> makes a new runner with a copy of the current state. It runs <em>When I start as a clone</em> trains and also has its own <em>every</em> timers. It does not run <em>When ▶ is pressed</em>.</li>
+      <li>There can be at most <strong>128 runners</strong> at once. Further clones are skipped, so a cloning loop cannot flood the stage.</li>
+      <li><em>Remove</em> stops all of the runner’s threads immediately and takes its sprite away.</li>
+    </ul>
+
+    <h2 id="winning-and-losing">Winning and losing</h2>
+    <p>The moment a <em>Win</em> or <em>Lose</em> wagon runs, the engine records the outcome and stops every thread. No further wagons run, even later ones in the same step. Physics freezes, the celebration plays, and the outcome card appears. Choosing <em>Play again</em> resets and runs again; <em>Edit</em> goes back to the design.</p>
+
+    <h2 id="physics">Physics</h2>
+    <p>Physics uses SpriteKit, tuned for the 256-pixel world. The numbers below are what the app uses.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Gravity (when on)</td><td>About 400 px/s² downward (25 tiles/s²). Falling across the stage takes about a second.</td></tr>
+        <tr><td>Weights</td><td>light 0.5 · normal 1 · heavy 2.5</td></tr>
+        <tr><td>Kick</td><td>An impulse giving a normal-weight body 50 px/s per point of strength. Strength 5 ≈ 250 px/s ≈ a 5-tile jump with gravity on.</td></tr>
+        <tr><td>Magnet</td><td>A radial field reaching 128 px (8 tiles), about 200 px/s² at 4 tiles, weakening with distance. It never pulls its owner.</td></tr>
+        <tr><td>Bounciness</td><td>restitution 0.45, friction 0.3</td></tr>
+        <tr><td>Air drag</td><td>0.2 for physics bodies, 0.6 for ghosts (they drift to a stop)</td></tr>
+        <tr><td>Rotation</td><td>Bodies don’t spin from collisions; only hinge joints let them rotate freely.</td></tr>
+        <tr><td>Player drag</td><td>Pulled at up to 900 px/s; released at up to 500 px/s.</td></tr>
+        <tr><td>Walls</td><td>Static slabs 64 px thick just outside each edge, so fast bodies cannot tunnel through.</td></tr>
+      </tbody>
+    </table></div>
+    <h3 id="body-types">Body types</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Body</th><th>Shape</th><th>Moves?</th><th>Gravity</th><th>Collides with</th><th>Detects touches</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Physics</td><td>circle (80 % of the sprite)</td><td>yes</td><td>yes</td><td>characters and walls</td><td>yes</td></tr>
+        <tr><td class="k">Fixed</td><td>square (80 % of the sprite)</td><td>only by wagons or dragging</td><td>no</td><td>is collided with</td><td>yes</td></tr>
+        <tr><td class="k">Ghost</td><td>circle</td><td>yes</td><td>no</td><td>walls only</td><td>yes</td></tr>
+      </tbody>
+    </table></div>
+    <p><em>Move</em> and <em>Go to</em> place the character directly, frame by frame, and clear its speed. This is the same behaviour as the original app: a moving character stays on course, and other physics bodies still bump into it.</p>
+
+    <h2 id="sound-during-a-run">Sound during a run</h2>
+    <p>The <em>GAME</em> music plays while the program runs. The two GAME tracks alternate, and the music crossfades from and back to the coding music. Effects are synthesised on the fly as square, triangle and noise chiptune blips: run and stop, bumps (at most one every 0.08 s), messages, the puff of a removal, hearts, and the win and lose jingles. The music ducks briefly under each effect.</p>
+
+    <nav class="pager"><a href="blocks.html"><span>Previous</span>Blocks</a><a class="next" href="samples.html"><span>Next</span>Samples</a></nav>
+  </main>
+</div>
+
+<footer class="site">
+  <div class="inner">
+    <img class="px" src="assets/art/mascot-blinking.png" alt="">
+    <span>Trains Project 3 · documentation for v1</span>
+    <span class="spacer"></span>
+    <nav class="legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></nav>
+    <a href="#">Back to top</a>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code editor · Trains Project 3</title>
+<meta name="description" content="How the Trains Project code editor works: trains, wagons, the depot, drag and drop, nesting, parameters, values and conditions.">
+<link rel="icon" href="assets/art/appicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b> Project</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav">
+      <a href="index.html">Home</a>
+      <a href="guide.html">Guide</a>
+      <a href="editor.html" aria-current="page">Code editor</a>
+      <a href="stage.html">Stage &amp; characters</a>
+      <a href="blocks.html">Blocks</a>
+      <a href="engine.html">How a run works</a>
+      <a href="samples.html">Samples</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="toc" data-auto></aside>
+  <main class="doc">
+    <p class="eyebrow">Code editor</p>
+    <h1>Building trains</h1>
+    <p class="intro">The code editor is a rail yard. Each train is parked on its own rail, the locomotive on the left facing left, and the wagons coupled behind it to the right. This page covers how to build, change and read trains.</p>
+
+    <figure><img class="shot" src="assets/shots/code-cat.jpg" alt="The cat's trains in the Banana chase sample"><figcaption>The cat in <em>Banana chase</em>: four <em>When a button is pressed</em> trains (one per arrow key), each with a <em>Move</em> wagon. The depot with the Locomotives tab open is at the bottom.</figcaption></figure>
+
+    <h2 id="anatomy-of-a-train">Anatomy of a train</h2>
+    <ul>
+      <li><strong>The locomotive</strong> is the event that starts the train. Its cab carries the event’s icon. When the event has parameters (which key, which colour, how many seconds), they ride on the <strong>tender</strong> behind the cab as plates.</li>
+      <li><strong>Wagons</strong> are boxcars in their category’s colour with a white icon painted on the side. A wagon stretches to fit its <strong>parameter plates</strong>.</li>
+      <li>The train reads <strong>left to right</strong>: the wagon right behind the tender runs first.</li>
+      <li>Trains never drive anywhere. They stay parked, and only the steam moves. While the program runs, the wagon that is working <strong>lights up</strong> with a pulsing border, and the locomotive puffs harder.</li>
+    </ul>
+    <p>Each character has its own trains. The editor shows the trains of the character selected in the dock. A character can have as many trains as you like. They all run side by side, so one character can walk, talk and listen for bumps at the same time.</p>
+
+    <h3 id="nesting-repeat-forever-and-if">Nesting: repeat, forever and if</h3>
+    <p>Three wagons are <strong>containers</strong>: <em>Repeat</em>, <em>Forever</em> and <em>If</em>. The wagons they own run on a <strong>lower siding</strong> right after the container wagon, under a canopy in the container’s colour that ends in a post. After the siding, the train carries on along the main rail.</p>
+    <ul>
+      <li>An empty container shows a dashed slot to drop wagons into.</li>
+      <li>An <em>If</em> wagon has an <strong>else</strong> plate. Switch it on to get a second branch. The two branches are separated by a sign post reading “else”. You can also add or remove the else branch from the wagon’s menu.</li>
+      <li>Containers can be nested inside each other as deeply as you like.</li>
+    </ul>
+    <div class="yard">
+      <p class="yard-title">If touching the banana, say Yum, else take a step</p>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-start.png" alt=""></div><div class="cap"><b>When ▶ pressed</b></div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-forever.png" alt=""></div><div class="cap"><b>Forever</b></div></div>
+        <div class="siding c-control"><span class="label">forever</span>
+          <div class="wg c-control"><div class="body"><img src="assets/art/glyph-if.png" alt=""></div><div class="cap"><b>If</b>touching Banana</div></div>
+          <div class="siding c-control"><span class="label">then</span>
+            <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“Yum!”</div></div>
+            <div class="elsepost"><span>else</span></div>
+            <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-move.png" alt=""></div><div class="cap"><b>Move</b>forward · 1</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2 id="the-depot-palette">The depot (palette)</h2>
+    <p>Along the bottom of the editor is the <strong>depot</strong>. On the left are six colour-coded category tabs. To the right, the chosen category’s locomotives or wagons are parked on a siding that scrolls sideways.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Tab</th><th>Colour</th><th>Contains</th></tr></thead>
+      <tbody>
+        <tr><td class="k"><span class="chip c-events"><img src="assets/art/glyph-on-start.png" alt=""></span> Locomotives</td><td>red</td><td>The 9 events that start a train</td></tr>
+        <tr><td class="k"><span class="chip c-motion"><img src="assets/art/glyph-move.png" alt=""></span> Motion</td><td>blue</td><td>Move, Kick, Turn, Point, Go to</td></tr>
+        <tr><td class="k"><span class="chip c-looks"><img src="assets/art/glyph-say.png" alt=""></span> Looks</td><td>lavender</td><td>Say, Costume, Colour, Size, Fade, Pen down, Pen up, Clear pen</td></tr>
+        <tr><td class="k"><span class="chip c-control"><img src="assets/art/glyph-repeat.png" alt=""></span> Control</td><td>orange</td><td>Wait, Repeat, Forever, If, Wait until, Send, Clone, Remove, Win, Lose</td></tr>
+        <tr><td class="k"><span class="chip c-physics"><img src="assets/art/glyph-gravity.png" alt=""></span> Physics</td><td>green</td><td>Gravity, Body, Mass, Magnet, Stick, Drag</td></tr>
+        <tr><td class="k"><span class="chip c-data"><img src="assets/art/glyph-set.png" alt=""></span> Data</td><td>yellow</td><td>Set, Change, Hearts, Show variable</td></tr>
+      </tbody>
+    </table></div>
+    <figure><img class="shot" src="assets/shots/palette-motion.jpg" alt="The depot with the Motion tab open"><figcaption>The Motion tab: Move, Kick, Turn, Point and Go to, each labelled under its wheels.</figcaption></figure>
+    <p>There are two ways to use the depot:</p>
+    <ul>
+      <li><strong>Tap</strong> a locomotive to start a new train. It is placed near the top-left of the visible canvas, below any trains already there. <strong>Tap</strong> a wagon to couple it to the end of the selected train (or of the last train, or of a new <em>When ▶ is pressed</em> train if the character has none).</li>
+      <li><strong>Lift</strong> a wagon up out of the depot and drag it to exactly where you want it. A sideways drag scrolls the depot instead, so you must move upwards first.</li>
+    </ul>
+
+    <h2 id="drag-and-drop">Drag and drop</h2>
+    <h3 id="dropping-wagons">Dropping wagons</h3>
+    <p>While you drag a wagon over the canvas, the editor looks for the nearest insertion point on any of the character’s tracks, including container sidings. A gap opens there to preview where the wagon will land. Let go and it couples in with a <strong>clack</strong>. The train you drop onto becomes the selected train.</p>
+    <h3 id="taking-wagons-off">Taking wagons off</h3>
+    <p>Dragging a wagon that is already on a train takes <strong>it and everything coupled behind it</strong>, as with real wagons. This lets you move the tail of a train in one gesture, or split a train in two. If you only want to remove one wagon from the middle, use its menu and choose <em>Delete</em>.</p>
+    <p>A dragged stack cannot be dropped into itself (for example, a repeat into its own siding).</p>
+    <h3 id="deleting">Deleting</h3>
+    <p>While you drag, a <strong>buffer stop</strong> (the trash) appears on the canvas. Dropping a wagon stack or a whole train on it, or back on the depot, deletes it. Dropping a dragged wagon stack on an empty part of the canvas, away from any track, also takes it off. Dropping a <em>new</em> wagon from the depot onto empty canvas puts it back with no change.</p>
+    <h3 id="moving-trains">Moving trains</h3>
+    <p>Drag a <strong>locomotive</strong> to move its whole train anywhere on the canvas. Dropping a locomotive from the depot onto the canvas creates a new train at that spot.</p>
+
+    <div class="note"><p><strong>Feedback.</strong> Every pick-up, drop and deletion has its own chiptune sound effect. On iPad you also feel a light haptic when you pick something up, hover over a new drop spot, and land.</p></div>
+
+    <h2 id="menus">Menus</h2>
+    <p>Long-press (iPad) or right-click (Mac) for a menu:</p>
+    <ul>
+      <li><strong>On a locomotive:</strong> <em>Duplicate</em> copies the whole train, slightly offset. <em>Delete</em> removes the train.</li>
+      <li><strong>On a wagon:</strong> <em>Duplicate</em> inserts a copy right after it (containers are copied with their contents). <em>Delete</em> removes only this wagon and what it contains. On an <em>If</em>, there is also an item to add or remove the else branch.</li>
+    </ul>
+
+    <h2 id="parameters">Parameters</h2>
+    <p>Parameters are shown as <strong>plates</strong> on the wagon (or on the locomotive’s tender). Tap a plate to open a compact popover. Choices that pick one thing close as soon as you pick. Every parameter starts with a sensible default, and nothing is random unless you choose <em>Random</em>.</p>
+    <div class="shots">
+      <figure><img class="shot" src="assets/shots/popover-number.jpg" alt="The number popover for Move tiles"><figcaption>A number plate. The top row picks the value source (number, random, variable, property, timer). Below are − / + buttons and common values.</figcaption></figure>
+      <figure><img class="shot" src="assets/shots/popover-option.jpg" alt="The direction popover for Move"><figcaption>An option plate: Move’s direction as six icon tiles (forward, backward, up, down, left, right).</figcaption></figure>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Plate kind</th><th>Editor</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Number</td><td>Big − / + buttons that step by the parameter’s step (e.g. 15° for angles, 0.5 s for waits), plus a row of common values: tiles 1, 2, 3, 5, 8 · degrees 15, 45, 90, 180, 270 · seconds 0.5, 1, 2, 5, 10 · percent 25, 50, 100, 150, 200. Literal numbers are kept inside the parameter’s range.</td></tr>
+        <tr><td class="k">Option</td><td>A grid of tiles, with icons wherever one reads better than a word: arrows for directions, a dial for speeds, and so on.</td></tr>
+        <tr><td class="k">Text</td><td>A text field (Say: up to 40 characters).</td></tr>
+        <tr><td class="k">Target</td><td>The project’s characters, <em>any</em> character, and, where allowed, <em>walls</em> or a single wall (left, right, top, bottom).</td></tr>
+        <tr><td class="k">Costume</td><td>The costume grid.</td></tr>
+        <tr><td class="k">Colour</td><td>Swatches of the app’s 32-colour palette (the pen colour).</td></tr>
+        <tr><td class="k">Variable</td><td>The four tiles A, B, C, D.</td></tr>
+        <tr><td class="k">Condition</td><td>The condition editor, see below.</td></tr>
+      </tbody>
+    </table></div>
+    <p>Some plates appear only when they matter. <em>Point</em> shows an angle plate in <em>angle</em> mode and a target plate in <em>toward</em> mode. <em>Go to</em> shows x and y for <em>tile</em>, nothing for <em>random</em>, and a target for <em>character</em>.</p>
+
+    <h3 id="values">Values</h3>
+    <p>Any number plate can take its number from one of five sources:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Source</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="k"><code>123</code> Number</td><td>A fixed number. This is the default everywhere.</td></tr>
+        <tr><td class="k">🎲 Random</td><td>A random <strong>whole number</strong> between a minimum and a maximum, both included. A new number is drawn every time the wagon reads it, so a <em>Wait random 1–3</em> in a loop waits a different time on each pass.</td></tr>
+        <tr><td class="k"><code>A</code> Variable</td><td>The current value of variable A, B, C or D. Variables are shared by all characters and start at 0 on every run.</td></tr>
+        <tr><td class="k"><code>XY</code> Property</td><td>A property of the character running the wagon: <em>x</em> or <em>y</em> (in tiles), <em>angle</em> (degrees), <em>size</em> (percent) or <em>hearts</em>.</td></tr>
+        <tr><td class="k">⏱ Timer</td><td>Seconds since ▶ was pressed.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><p><strong>Example.</strong> The <a href="samples.html#pen-spiral">Pen spiral</a> sample moves <em>A</em> tiles while adding 0.1 to <em>A</em> on every pass, so each step is a little longer than the last.</p></div>
+
+    <h3 id="conditions">Conditions</h3>
+    <p><em>If</em> and <em>Wait until</em> carry a condition. The condition editor offers three kinds, and a <strong>not</strong> switch that flips the answer:</p>
+    <ul>
+      <li><strong>Compare</strong> two values with <code>&lt;</code> <code>≤</code> <code>=</code> <code>≠</code> <code>≥</code> <code>&gt;</code>. Both sides can be any value source, e.g. <em>A ≥ 5</em> or <em>x &gt; random 3–12</em>. Numbers closer than one millionth count as equal, so 0.1 + 0.2 = 0.3 holds.</li>
+      <li><strong>Touching</strong> a character, any character, the walls or one wall.</li>
+      <li><strong>Button held</strong>: a gamepad button (← → ↑ ↓ A B) is being held down right now.</li>
+    </ul>
+    <p>A new <em>If</em> or <em>Wait until</em> starts with a condition that is always true (1 = 1). Switching the kind starts from a useful example: <em>A &gt; 0</em>, <em>touching any</em>, or <em>button A held</em>.</p>
+
+    <h2 id="moving-around-the-canvas">Moving around the canvas</h2>
+    <ul>
+      <li><strong>Pan</strong> by dragging empty canvas (iPad), or by scrolling with a trackpad (Mac).</li>
+      <li><strong>Zoom</strong> from 40 % to 200 %: pinch on iPad or a trackpad, ⌘-scroll or a mouse wheel on Mac, or use the − and + buttons in the corner.</li>
+      <li>The <strong>home</strong> button between them (“Show all”) goes back to 100 % with the top-left train in view.</li>
+    </ul>
+    <div class="note"><p><strong>Old layouts.</strong> If a project’s trains overlap when it opens (projects laid out for the old vertical trains can), the editor re-stacks each character’s trains into rows, keeping their reading order. This is one undo step.</p></div>
+
+    <h2 id="undo-and-autosave">Undo and autosave</h2>
+    <p>Every change to a program goes through one path in the workspace model, so each gesture is exactly one undo step: a drop, a deletion, a parameter change, a duplicated train. Up to 100 steps are kept. Changes are ignored while a program runs, so a run can never edit the code. The project is saved about a second after the last change and again just before each run.</p>
+
+    <nav class="pager"><a href="guide.html"><span>Previous</span>Guide</a><a class="next" href="stage.html"><span>Next</span>Stage &amp; characters</a></nav>
+  </main>
+</div>
+
+<footer class="site">
+  <div class="inner">
+    <img class="px" src="assets/art/mascot-blinking.png" alt="">
+    <span>Trains Project 3 · documentation for v1</span>
+    <span class="spacer"></span>
+    <nav class="legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></nav>
+    <a href="#">Back to top</a>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

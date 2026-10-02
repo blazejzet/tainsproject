@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Samples · Trains Project 3</title>
+<meta name="description" content="The four Trains Project sample projects explained train by train: Bouncy ball, Banana chase, Pen spiral and Ping-pong.">
+<link rel="icon" href="assets/art/appicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pixelify+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b> Project</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav">
+      <a href="index.html">Home</a>
+      <a href="guide.html">Guide</a>
+      <a href="editor.html">Code editor</a>
+      <a href="stage.html">Stage &amp; characters</a>
+      <a href="blocks.html">Blocks</a>
+      <a href="engine.html">How a run works</a>
+      <a href="samples.html" aria-current="page">Samples</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="toc" data-auto></aside>
+  <main class="doc">
+    <p class="eyebrow">Samples</p>
+    <h1>The sample projects</h1>
+    <p class="intro">Four small projects ship with the app. Each one shows a different idea. Open them from the <em>Samples</em> row on the home screen; you always get a fresh copy to play with.</p>
+
+    <!-- ============ BOUNCY BALL ============ -->
+    <h2 id="bouncy-ball">Bouncy ball</h2>
+    <p><strong>Shows:</strong> gravity, walls, fixed obstacles and bump events. <strong>Stage:</strong> Meadow, walls on, gravity on at start.</p>
+    <p>A light beach ball falls onto the meadow. Every time it lands on the bottom wall it is kicked back up and changes colour. Two fixed bricks stand in its way, and tapping the ball gives it an extra-big kick.</p>
+    <div class="costumes cast">
+      <figure><img src="assets/art/costume-ball-0.png" alt=""><figcaption>Ball · light, physics · (8, 12)</figcaption></figure>
+      <figure><img src="assets/art/costume-brick-0.png" alt=""><figcaption>Brick · fixed · (4, 5), (12, 5)</figcaption></figure>
+    </div>
+    <div class="yard">
+      <p class="yard-title">Ball</p>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-start.png" alt=""></div><div class="cap"><b>When ▶ pressed</b></div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“Boing!” · 1 s</div></div>
+        <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-kick.png" alt=""></div><div class="cap"><b>Kick</b>right · 3</div></div>
+      </div>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-bump.png" alt=""></div><div class="cap"><b>When bumping</b>bottom wall</div></div>
+        <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-kick.png" alt=""></div><div class="cap"><b>Kick</b>up · 6</div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-colour.png" alt=""></div><div class="cap"><b>Colour</b>next</div></div>
+      </div>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-tap.png" alt=""></div><div class="cap"><b>When tapped</b></div></div>
+        <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-kick.png" alt=""></div><div class="cap"><b>Kick</b>up · 9</div></div>
+      </div>
+    </div>
+    <h3 id="things-to-notice">Things to notice</h3>
+    <ul>
+      <li>The bricks have <strong>no trains at all</strong>. Their <em>fixed</em> body is enough to make them solid obstacles.</li>
+      <li>Because the ball is <em>light</em>, each point of kick strength sends it twice as fast as a normal ball.</li>
+      <li>Kicks add to the ball’s current speed, so a tap on the way up sends it higher than a tap while it is falling.</li>
+      <li>Try: make the ball <em>heavy</em> in the inspector, or switch the bottom-wall bump to <em>any wall</em>.</li>
+    </ul>
+
+    <!-- ============ BANANA CHASE ============ -->
+    <h2 id="banana-chase">Banana chase</h2>
+    <p><strong>Shows:</strong> gamepad input, variables and a score, if, win and lose, chasing with <em>point toward</em>. <strong>Stage:</strong> Grid, walls on, no gravity.</p>
+    <p>Steer the cat with the arrow keys or the d-pad. Each banana you catch jumps to a random tile and adds a point. Five points wins, but the monkey slowly chases the cat, and if it catches you the game is over.</p>
+    <div class="costumes cast">
+      <figure><img src="assets/art/costume-cat-0.png" alt=""><figcaption>Cat · ghost · (3, 3)</figcaption></figure>
+      <figure><img src="assets/art/costume-banana-0.png" alt=""><figcaption>Banana · ghost · (12, 12)</figcaption></figure>
+      <figure><img src="assets/art/costume-monkey-0.png" alt=""><figcaption>Monkey · ghost · (13, 3)</figcaption></figure>
+    </div>
+    <div class="yard">
+      <p class="yard-title">Cat: four steering trains (one per arrow), a score keeper and a banana catcher</p>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-input.png" alt=""></div><div class="cap"><b>When button</b>← (and → ↑ ↓)</div></div>
+        <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-move.png" alt=""></div><div class="cap"><b>Move</b>left · 1 · fast</div></div>
+      </div>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-start.png" alt=""></div><div class="cap"><b>When ▶ pressed</b></div></div>
+        <div class="wg c-data"><div class="body"><img src="assets/art/glyph-set.png" alt=""></div><div class="cap"><b>Set</b>A = 0</div></div>
+        <div class="wg c-data"><div class="body"><img src="assets/art/glyph-showVariable.png" alt=""></div><div class="cap"><b>Show variable</b>A · on</div></div>
+      </div>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-bump.png" alt=""></div><div class="cap"><b>When bumping</b>Banana</div></div>
+        <div class="wg c-data"><div class="body"><img src="assets/art/glyph-change.png" alt=""></div><div class="cap"><b>Change</b>A + 1</div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“Yum!” · 1 s</div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-if.png" alt=""></div><div class="cap"><b>If</b>A ≥ 5</div></div>
+        <div class="siding c-control"><span class="label">then</span>
+          <div class="wg c-control"><div class="body"><img src="assets/art/glyph-win.png" alt=""></div><div class="cap"><b>Win</b></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="yard">
+      <p class="yard-title">Banana</p>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-bump.png" alt=""></div><div class="cap"><b>When bumping</b>Cat</div></div>
+        <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-goTo.png" alt=""></div><div class="cap"><b>Go to</b>random</div></div>
+      </div>
+      <p class="yard-title" style="margin-top:18px">Monkey</p>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-start.png" alt=""></div><div class="cap"><b>When ▶ pressed</b></div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-wait.png" alt=""></div><div class="cap"><b>Wait</b>2 s</div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-forever.png" alt=""></div><div class="cap"><b>Forever</b></div></div>
+        <div class="siding c-control"><span class="label">forever</span>
+          <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-point.png" alt=""></div><div class="cap"><b>Point</b>toward Cat</div></div>
+          <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-move.png" alt=""></div><div class="cap"><b>Move</b>forward · 1 · slow</div></div>
+        </div>
+      </div>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-bump.png" alt=""></div><div class="cap"><b>When bumping</b>Cat</div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-lose.png" alt=""></div><div class="cap"><b>Lose</b></div></div>
+      </div>
+    </div>
+    <div class="shots">
+      <figure><img class="shot" src="assets/shots/code-monkey.jpg" alt="The monkey's trains in the editor"><figcaption>The monkey’s trains in the editor. The forever loop’s siding runs under an orange canopy.</figcaption></figure>
+      <figure><img class="shot" src="assets/shots/code-running.jpg" alt="The monkey's trains during a run"><figcaption>During the run, the forever wagon and the Move wagon on its siding are lit up.</figcaption></figure>
+    </div>
+    <h3 id="things-to-notice">Things to notice</h3>
+    <ul>
+      <li>All three characters are <strong>ghosts</strong>, so they pass through each other while the <em>bump</em> events still fire.</li>
+      <li>One cat bump fires <strong>two</strong> trains on different characters: the cat scores, and the banana runs away.</li>
+      <li>The monkey re-aims before every step. Each <em>Move</em> of 1 tile at slow speed takes half a second, so the cat (fast, 8 tiles/s) can outrun it.</li>
+      <li>Holding an arrow does not keep the cat moving. Each press is one step, because <em>When a button is pressed</em> fires once per press.</li>
+      <li>Try: make the monkey faster as the score grows, by setting its Move tiles to the variable <em>A</em>.</li>
+    </ul>
+
+    <!-- ============ PEN SPIRAL ============ -->
+    <h2 id="pen-spiral">Pen spiral</h2>
+    <p><strong>Shows:</strong> loops, a variable that grows, using a variable as a parameter, and the pen. <strong>Stage:</strong> Space, walls on, no gravity.</p>
+    <p>The owl draws a blue spiral. On each of 36 passes it adds 0.1 to <em>A</em>, walks <em>A</em> tiles and turns 30° left. The steps get longer, so the path spirals outwards.</p>
+    <div class="costumes cast">
+      <figure><img src="assets/art/costume-owl-0.png" alt=""><figcaption>Owl · ghost · (8, 8) · 75 %</figcaption></figure>
+    </div>
+    <div class="yard">
+      <p class="yard-title">Owl</p>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-start.png" alt=""></div><div class="cap"><b>When ▶ pressed</b></div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-penClear.png" alt=""></div><div class="cap"><b>Clear pen</b></div></div>
+        <div class="wg c-data"><div class="body"><img src="assets/art/glyph-set.png" alt=""></div><div class="cap"><b>Set</b>A = 0</div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-penDown.png" alt=""></div><div class="cap"><b>Pen down</b>blue</div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-repeat.png" alt=""></div><div class="cap"><b>Repeat</b>36</div></div>
+        <div class="siding c-control"><span class="label">×36</span>
+          <div class="wg c-data"><div class="body"><img src="assets/art/glyph-change.png" alt=""></div><div class="cap"><b>Change</b>A + 0.1</div></div>
+          <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-move.png" alt=""></div><div class="cap"><b>Move</b>forward · <i>A</i> · fast</div></div>
+          <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-turn.png" alt=""></div><div class="cap"><b>Turn</b>left · 30°</div></div>
+        </div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-penUp.png" alt=""></div><div class="cap"><b>Pen up</b></div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“Ta-da!” · 2 s</div></div>
+      </div>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-tap.png" alt=""></div><div class="cap"><b>When tapped</b></div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-penClear.png" alt=""></div><div class="cap"><b>Clear pen</b></div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-colour.png" alt=""></div><div class="cap"><b>Colour</b>next</div></div>
+      </div>
+    </div>
+    <div class="shots">
+      <figure><img class="shot" src="assets/shots/pen-running.jpg" alt="The owl drawing a blue spiral on the space background"><figcaption>The spiral after a few seconds.</figcaption></figure>
+      <figure><img class="shot" src="assets/shots/pen-code.jpg" alt="The Pen spiral code during the run"><figcaption>The code during the run, with the mini stage drawing the same spiral.</figcaption></figure>
+    </div>
+    <h3 id="things-to-notice">Things to notice</h3>
+    <ul>
+      <li>The Move wagon’s <em>tiles</em> plate is set to the <strong>variable A</strong>, not a number. That one change turns a circle into a spiral.</li>
+      <li>12 turns of 30° make a full circle, so 36 passes draw three loops.</li>
+      <li>Tapping the owl wipes the drawing and changes its colour. Since the start train is still running, the spiral simply carries on drawing.</li>
+      <li>Try: turn 91° instead of 30°, or use <em>Random</em> for the pen colour inside the loop.</li>
+    </ul>
+
+    <!-- ============ PING-PONG ============ -->
+    <h2 id="ping-pong">Ping-pong</h2>
+    <p><strong>Shows:</strong> messages between characters, counting, and if/else. <strong>Stage:</strong> Dusk, walls on, no gravity.</p>
+    <p>The pig says “Ping!” and sends a red message. The bear spins round, says “Pong!” and sends a blue message back. The pig counts the rallies, and after five it says “I win!” and the run ends with a win.</p>
+    <div class="costumes cast">
+      <figure><img src="assets/art/costume-pig-0.png" alt=""><figcaption>Pig · fixed · (4, 8)</figcaption></figure>
+      <figure><img src="assets/art/costume-bear-0.png" alt=""><figcaption>Bear · fixed · (12, 8) · 180°</figcaption></figure>
+    </div>
+    <div class="yard">
+      <p class="yard-title">Pig</p>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-start.png" alt=""></div><div class="cap"><b>When ▶ pressed</b></div></div>
+        <div class="wg c-data"><div class="body"><img src="assets/art/glyph-set.png" alt=""></div><div class="cap"><b>Set</b>A = 0</div></div>
+        <div class="wg c-data"><div class="body"><img src="assets/art/glyph-showVariable.png" alt=""></div><div class="cap"><b>Show variable</b>A</div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“Ping!” · 1 s</div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-send.png" alt=""></div><div class="cap"><b>Send</b>red</div></div>
+      </div>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-message.png" alt=""></div><div class="cap"><b>When message</b>blue</div></div>
+        <div class="wg c-data"><div class="body"><img src="assets/art/glyph-change.png" alt=""></div><div class="cap"><b>Change</b>A + 1</div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-if.png" alt=""></div><div class="cap"><b>If</b>A ≥ 5</div></div>
+        <div class="siding c-control"><span class="label">then</span>
+          <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“I win!” · 2 s</div></div>
+          <div class="wg c-control"><div class="body"><img src="assets/art/glyph-win.png" alt=""></div><div class="cap"><b>Win</b></div></div>
+          <div class="elsepost"><span>else</span></div>
+          <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“Ping!” · 1 s</div></div>
+          <div class="wg c-control"><div class="body"><img src="assets/art/glyph-send.png" alt=""></div><div class="cap"><b>Send</b>red</div></div>
+        </div>
+      </div>
+      <p class="yard-title" style="margin-top:18px">Bear</p>
+      <div class="train">
+        <div class="loco"><div class="body"><img src="assets/art/glyph-on-message.png" alt=""></div><div class="cap"><b>When message</b>red</div></div>
+        <div class="wg c-motion"><div class="body"><img src="assets/art/glyph-turn.png" alt=""></div><div class="cap"><b>Turn</b>left · 360°</div></div>
+        <div class="wg c-looks"><div class="body"><img src="assets/art/glyph-say.png" alt=""></div><div class="cap"><b>Say</b>“Pong!” · 1 s</div></div>
+        <div class="wg c-control"><div class="body"><img src="assets/art/glyph-send.png" alt=""></div><div class="cap"><b>Send</b>blue</div></div>
+      </div>
+    </div>
+    <h3 id="things-to-notice">Things to notice</h3>
+    <ul>
+      <li>The pig’s blue-message train <strong>sends the red message from inside itself</strong>, and the bear answers with blue. Each message restarts the receiving train, which is exactly what a rally needs.</li>
+      <li>The bear starts at 180°, facing the pig. A full 360° spin takes one second and ends facing the same way.</li>
+      <li>Both characters are <em>fixed</em>, so nothing pushes them around.</li>
+      <li>Try: add a third character that listens to both colours and counts every hit in <em>B</em>.</li>
+    </ul>
+
+    <nav class="pager"><a href="engine.html"><span>Previous</span>How a run works</a><a class="next" href="index.html"><span>Back to</span>Home</a></nav>
+  </main>
+</div>
+
+<footer class="site">
+  <div class="inner">
+    <img class="px" src="assets/art/mascot-blinking.png" alt="">
+    <span>Trains Project 3 · documentation for v1</span>
+    <span class="spacer"></span>
+    <nav class="legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></nav>
+    <a href="#">Back to top</a>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>
