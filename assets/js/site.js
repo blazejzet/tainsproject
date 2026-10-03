@@ -1,4 +1,4 @@
-// Trains Project docs: mobile menu and the "On this page" list built from the headings.
+// TrainsCoding docs: mobile menu and the "On this page" list built from the headings.
 (function () {
   var toggle = document.querySelector(".nav-toggle");
   var nav = document.querySelector(".nav");

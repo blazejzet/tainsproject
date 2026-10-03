@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Developers · Trains Project 3</title>
+<title>Developers · TrainsCoding</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Trains Project 3 for developers: architecture of the TrainsKit package, building and testing, the save format, the AI builder seam, art and music pipelines.">
+<meta name="description" content="TrainsCoding for developers: architecture of the TrainsKit package, building and testing, the save format, the AI builder seam, art and music pipelines.">
 <link rel="icon" href="assets/art/appicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
 
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b> Project</span></a>
+    <a class="brand" href="index.html"><img class="px" src="assets/art/mascot.png" alt=""><span><b>Trains</b>Coding</span></a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
     <nav class="nav" id="nav">
       <a href="index.html">Home</a>
@@ -35,11 +35,11 @@
   <main class="doc">
     <p class="eyebrow">Developers</p>
     <h1>Under the hood</h1>
-    <p class="intro">Trains Project 3 is a from-scratch rebuild in Swift 6: one multiplatform SwiftUI + SpriteKit app for iPadOS 26 and macOS 26, with almost all code in a local Swift package called <code>TrainsKit</code>. The authoritative design lives in <a href="../3.0/DESIGN.md"><code>3.0/DESIGN.md</code></a>.</p>
+    <p class="intro">TrainsCoding is a from-scratch rebuild of the earlier Trains Project app, in Swift 6: one multiplatform SwiftUI + SpriteKit app for iPadOS 26 and macOS 26, with almost all code in a local Swift package called <code>TrainsKit</code>. The authoritative design lives in <a href="../3.0/DESIGN.md"><code>3.0/DESIGN.md</code></a>.</p>
 
     <h2 id="repository-layout">Repository layout</h2>
 <pre><code>3.0/
-  TrainsProject.xcodeproj    app target "TrainsProject" (iOS + macOS) and UI tests
+  TrainsCoding.xcodeproj    app target "TrainsCoding" (iOS + macOS) and UI tests
   App/                       @main, app icon, InfoPlist strings
   UITests/                   scripted UI tests (driven by Tools/ui_steps.sh)
   Packages/TrainsKit/        the local Swift package with all the code
@@ -49,7 +49,7 @@
   LEGACY_LANGUAGE.md         the old app's 84-cart language, kept for reference
 new-vibe/                    the original soundtrack (Opus in .m4a)
 website/                     this documentation</code></pre>
-    <p>The bundle identifier is <code>pl.zyglarski.trainsproject2</code> and the iCloud container is <code>iCloud.pl.zyglarski.trainsproject2</code>. Both are shared with the 2.0 port; iCloud is not used in v1.</p>
+    <p>The bundle identifier is <code>pl.zyglarski.trainscoding2</code>. iCloud is not used in v1; when it is, the container will be <code>iCloud.pl.zyglarski.trainscoding2</code>.</p>
 
     <h2 id="architecture">Architecture</h2>
     <p><code>TrainsKit</code> is split into six modules with a strict dependency direction. The model and the engine know nothing about SpriteKit or SwiftUI.</p>
@@ -109,8 +109,8 @@ website/                     this documentation</code></pre>
 cd 3.0/Packages/TrainsKit &amp;&amp; swift test
 
 # The app
-xcodebuild -scheme TrainsProject -destination 'platform=macOS' build
-xcodebuild -scheme TrainsProject -destination 'generic/platform=iOS Simulator' build
+xcodebuild -scheme TrainsCoding -destination 'platform=macOS' build
+xcodebuild -scheme TrainsCoding -destination 'generic/platform=iOS Simulator' build
 
 # A scripted UI run with screenshots. Taps and drags use window fractions (0…1).
 Tools/ui_steps.sh /tmp/shots "wait:4;tap:0.255,0.40;wait:3;shot:workspace"</code></pre>
@@ -227,7 +227,6 @@ World: 16x16 tiles, x 0-15 left to right, y 0-15 bottom to top. Angles: 0 = righ
         <li>Challenge levels</li>
         <li>iCloud sync and sharing</li>
         <li>The AI track builder implementation (its protocol, catalogue description and validation do ship)</li>
-        <li>Artwork for six catalogued costumes (cow, sheep, hamster, dog, parrot, mouse), which fall back to the owl</li>
       </ul></div>
     </div>
 
@@ -238,7 +237,7 @@ World: 16x16 tiles, x 0-15 left to right, y 0-15 bottom to top. Angles: 0 = righ
 <footer class="site">
   <div class="inner">
     <img class="px" src="assets/art/mascot-blinking.png" alt="">
-    <span>Trains Project 3 · documentation for v1</span>
+    <span>TrainsCoding · documentation for v1</span>
     <span class="spacer"></span>
     <nav class="legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></nav>
     <a href="#">Back to top</a>
